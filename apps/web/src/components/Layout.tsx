@@ -83,7 +83,7 @@ export function Layout() {
       <div className="notice-bar">
         <div className="wrap">
           <span className="dot" />
-          <span className="full">學生製作 · 非校方官方網站 · 段考日期依行事曆；考程公布後會更新到這站</span>
+          <span className="full">非官方 · 學生製作 · 非校方官方網站 · 段考日期依行事曆；考程公布後會更新到這站</span>
           <span className="short">非官方 · 考程以段考中心為準</span>
         </div>
       </div>
