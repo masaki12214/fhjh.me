@@ -4,6 +4,20 @@
 
 > 本站為學生製作之非官方網站；資料來源為 [學校官網](https://www.fhjh.tp.edu.tw/) 及其子網站的公開頁面，重要資訊請以官方原文為準。
 
+## 網站（成品）
+
+```bash
+cd apps/web
+npm install
+npm run dev
+```
+
+開啟 http://localhost:5173 。
+
+- 首頁：第一次段考何時、考程在不在
+- 校園 Wiki 主頁：中文維基百科「臺北市私立復興實驗高級中學」
+- 後台 `/admin`：貼考程文字 → 轉 JSON → 發布（存在這個瀏覽器）
+
 ## 文件
 
 - 設計稿：[`docs/design/`](docs/design/README.md)
