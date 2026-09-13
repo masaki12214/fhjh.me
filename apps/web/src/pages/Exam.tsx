@@ -3,12 +3,15 @@ import { Link, useSearchParams } from 'react-router-dom'
 import { GRADE_LABEL, GRADES } from '../data/exam'
 import { useExam } from '../examContext'
 import { formatMd, formatRange, slotsForGrade, weekday } from '../lib/examStore'
+import { loadGrade, saveGrade } from '../lib/grade'
 import type { Grade } from '../data/types'
 
 export function Exam() {
   const { exam } = useExam()
   const [params, setParams] = useSearchParams()
-  const grade = (GRADES.includes(params.get('grade') as Grade) ? params.get('grade') : 'g8') as Grade
+  const grade = (
+    GRADES.includes(params.get('grade') as Grade) ? params.get('grade') : loadGrade()
+  ) as Grade
   const slots = useMemo(() => slotsForGrade(exam, grade), [exam, grade])
   const published = exam.scheduleStatus === 'published' && slots.length > 0
 
@@ -25,7 +28,15 @@ export function Exam() {
       </p>
       <div className="chips">
         {GRADES.map((g) => (
-          <button key={g} type="button" className={g === grade ? 'on' : ''} onClick={() => setParams({ grade: g })}>
+          <button
+            key={g}
+            type="button"
+            className={g === grade ? 'on' : ''}
+            onClick={() => {
+              saveGrade(g)
+              setParams({ grade: g })
+            }}
+          >
             {GRADE_LABEL[g]}
           </button>
         ))}

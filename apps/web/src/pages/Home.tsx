@@ -4,11 +4,12 @@ import { GRADE_LABEL, GRADES } from '../data/exam'
 import { wikiPages } from '../data/wiki'
 import { useExam } from '../examContext'
 import { daysUntil, formatRange, weekday } from '../lib/examStore'
+import { loadGrade, saveGrade } from '../lib/grade'
 import type { Grade } from '../data/types'
 
 export function Home() {
   const { exam } = useExam()
-  const [grade, setGrade] = useState<Grade>('g8')
+  const [grade, setGrade] = useState<Grade>(() => loadGrade())
   const days = daysUntil(exam.startsOn)
   const published = exam.scheduleStatus === 'published' && exam.schedule.some((s) => s.grade === grade)
 
@@ -19,7 +20,15 @@ export function Home() {
         <h1>{exam.name}</h1>
         <div className="grades">
           {GRADES.map((g) => (
-            <button key={g} type="button" className={g === grade ? 'on' : ''} onClick={() => setGrade(g)}>
+            <button
+              key={g}
+              type="button"
+              className={g === grade ? 'on' : ''}
+              onClick={() => {
+                setGrade(g)
+                saveGrade(g)
+              }}
+            >
               {GRADE_LABEL[g]}
             </button>
           ))}

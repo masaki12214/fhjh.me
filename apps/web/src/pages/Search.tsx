@@ -35,6 +35,9 @@ export function Search() {
 
   return (
     <main className="wrap page search-page">
+      <div className="crumb">
+        <Link to="/">首頁</Link> · 搜尋
+      </div>
       <h1>搜尋</h1>
       <form className="search-form" onSubmit={submit}>
         <input
