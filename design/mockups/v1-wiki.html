@@ -2,22 +2,11 @@
 <html lang="zh-Hant">
 <head>
 <meta charset="utf-8">
-<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <title>FHJH.me — 校園 Wiki（版本 A）</title>
 <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+TC:wght@400;500;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="v1.css">
 <style>
-:root{--navy:#123B6D;--navy-2:#0D2B50;--ink:#1B2430;--muted:#5B6B7F;--line:#E3E9F1;--green:#1B7F4D;--green-bg:#E6F4EC;--blue:#1F5FBF;--blue-bg:#E7EFFC;--amber:#B7791F;--amber-bg:#FFF4DD;--r:14px;--shadow:0 1px 2px rgba(18,59,109,.06),0 6px 20px rgba(18,59,109,.08)}
-*{box-sizing:border-box}
-html,body{margin:0;background:#F6F8FB;color:var(--ink);font-family:"Noto Sans TC","WenQuanYi Micro Hei","Droid Sans Fallback",sans-serif;font-size:15px;line-height:1.6;font-synthesis:none}
-a{color:inherit;text-decoration:none}
-.wrap{max-width:1120px;margin:0 auto;padding:0 20px}
-.topbar{background:var(--navy);color:#fff}
-.topbar .wrap{display:flex;align-items:center;gap:22px;height:60px}
-.brand{font-weight:700;font-size:20px}.brand small{display:block;font-size:11px;font-weight:500;opacity:.8;margin-top:-2px}
-.nav{display:flex;gap:18px;font-size:14px;font-weight:500}
-.nav a.active{border-bottom:2px solid #9CC4FF;padding-bottom:2px}
-.notice-bar{background:var(--navy-2);color:#CFE0F7;font-size:12.5px}
-.notice-bar .wrap{height:32px;display:flex;align-items:center}
 .layout{display:grid;grid-template-columns:240px 1fr;gap:22px;margin:22px 0 40px}
 .side .card,.article{background:#fff;border:1px solid var(--line);border-radius:var(--r);box-shadow:var(--shadow)}
 .side .card{padding:14px 16px;margin-bottom:12px}
@@ -37,16 +26,20 @@ ol{padding-left:20px} li{margin:6px 0}
 .src{background:#F8FAFC;border:1px solid var(--line);border-radius:10px;padding:12px 14px;margin-top:20px}
 .src h3{margin:0 0 8px;font-size:13px;color:var(--muted)}
 .src a{color:var(--blue);display:block;padding:3px 0;font-size:14px}
-footer{background:#fff;border-top:1px solid var(--line);color:var(--muted);font-size:13px}
-footer .wrap{padding:22px 20px}
-@media(max-width:800px){.layout{grid-template-columns:1fr}.nav{display:none}.article{padding:20px}}
+@media(max-width:720px){.layout{grid-template-columns:1fr}.article{padding:20px}}
 </style>
 </head>
 <body>
-<header class="topbar"><div class="wrap">
-  <a class="brand" href="v1-dashboard.html">FHJH.me<small>學生製作 · 非校方官方網站</small></a>
-  <nav class="nav"><a href="v1-dashboard.html">首頁</a><a href="v1-exam.html">段考中心</a><a href="v1-notice.html">公告</a><a class="active" href="v1-wiki.html">校園 Wiki</a></nav>
-</div></header>
+<header class="topbar">
+  <input type="checkbox" id="search-toggle"><input type="checkbox" id="nav-toggle">
+  <div class="wrap topbar-row">
+    <a class="brand" href="v1-dashboard.html">FHJH.me<span class="tag">非官方</span><small>學生製作 · 非校方官方網站</small></a>
+    <nav class="nav"><a href="v1-dashboard.html">首頁</a><a href="v1-exam.html">段考中心</a><a class="active" href="v1-wiki.html">請假／Wiki</a><a href="#">常用連結</a></nav>
+    <label class="search" for="q"><span>🔍</span><input id="q" type="search" placeholder="搜尋請假、補考…"><kbd>/</kbd></label>
+    <div class="icon-btns"><label class="icon-btn" for="search-toggle">🔍</label><label class="icon-btn menu-only" for="nav-toggle">☰</label></div>
+  </div>
+  <nav class="drawer wrap"><a href="v1-dashboard.html">首頁</a><a href="v1-exam.html">段考中心</a><a href="v1-wiki.html">請假／Wiki</a></nav>
+</header>
 <div class="notice-bar"><div class="wrap">Wiki 依官方規章改寫成步驟；每頁附原文連結與最後確認日。</div></div>
 <div class="wrap layout">
   <aside class="side">
@@ -97,5 +90,12 @@ footer .wrap{padding:22px 20px}
   </article>
 </div>
 <footer><div class="wrap">FHJH.me 學生製作 · 非校方官方網站 · <a href="index.html">回設計稿目錄</a></div></footer>
+<nav class="tabbar">
+  <a href="v1-dashboard.html"><span class="i">⌂</span>首頁</a>
+  <a href="v1-exam.html"><span class="i">考</span>段考</a>
+  <a class="on" href="v1-wiki.html"><span class="i">?</span>請假</a>
+  <a href="#"><span class="i">連</span>連結</a>
+  <a href="v1-notice.html"><span class="i">公</span>公告</a>
+</nav>
 </body>
 </html>

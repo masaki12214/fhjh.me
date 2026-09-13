@@ -13,6 +13,7 @@
 | [04-api.md](04-api.md) | 公開 API v1 與管理 API 規格、回應格式、快取、限流；機器可讀版在 [`api/openapi.yaml`](../../api/openapi.yaml) | 前端、後端 |
 | [05-parsing-rules.md](05-parsing-rules.md) | 解析與正規化規則：標題前綴、民國年、截止日／對象抽取、去重、下架偵測 | 爬蟲、編輯 |
 | [06-homepage.md](06-homepage.md) | 主頁低保真線框（桌面／手機）＋每個區塊對應的 API 欄位 | 前端、設計 |
+| **可點的前端設計稿** | [`design/mockups/index.html`](../../design/mockups/index.html) — A 儀表板／B 校刊／C App 三個版本 | 決策用 |
 | [07-roadmap.md](07-roadmap.md) | 里程碑、驗收條件、開工前待確認事項 | 全體 |
 
 ## 三個最重要的設計決策
