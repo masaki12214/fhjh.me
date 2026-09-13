@@ -1,0 +1,76 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>FHJH.me — 後台：上傳考程</title>
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+TC:wght@400;500;700&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="v1.css">
+<style>
+.admin{max-width:880px;margin:0 auto;padding:24px 20px 80px}
+.admin h1{font-size:24px;color:var(--navy);margin:0 0 6px}
+.admin .lead{color:var(--muted);margin:0 0 20px}
+.drop{border:2px dashed #B7C6DA;background:#fff;border-radius:14px;padding:36px 20px;text-align:center}
+.drop b{display:block;font-size:16px;color:var(--navy);margin-bottom:6px}
+.drop span{color:var(--muted);font-size:13.5px}
+.steps{display:flex;gap:8px;margin:18px 0;flex-wrap:wrap}
+.steps span{font-size:12.5px;font-weight:700;padding:5px 10px;border-radius:999px;background:#E8EEF6;color:var(--navy)}
+.steps span.on{background:var(--navy);color:#fff}
+pre{margin:0;padding:16px;background:#0F172A;color:#E6EDF7;border-radius:12px;overflow:auto;font:13px/1.5 "IBM Plex Mono",ui-monospace,monospace}
+.row{display:flex;gap:10px;flex-wrap:wrap;margin-top:14px}
+.btn{border:0;border-radius:10px;padding:10px 16px;font-weight:700;font-size:14px;cursor:pointer}
+.btn.pri{background:var(--navy);color:#fff}
+.btn.ghost{background:#fff;border:1px solid var(--line);color:var(--navy)}
+.ok{margin-top:14px;padding:12px 14px;background:var(--green-bg);color:var(--green);border-radius:10px;font-weight:600;font-size:14px}
+</style>
+</head>
+<body>
+<header class="topbar">
+  <div class="wrap topbar-row">
+    <a class="brand" href="v1-dashboard.html">FHJH.me<small>管理後台 · 不對外</small></a>
+    <nav class="nav"><a href="v1-dashboard.html">看前台</a><a class="active" href="v1-admin-exam.html">上傳考程</a></nav>
+  </div>
+</header>
+
+<div class="admin">
+  <h1>上傳第一次段考考程</h1>
+  <p class="lead">把老師或教務處發的考程（PDF、照片、訊息截圖）丟上來。LLM 只負責抽出「哪一天、第幾節、哪一科」，你確認後再發布。範圍可以之後再補。</p>
+
+  <div class="steps">
+    <span class="on">1 上傳</span>
+    <span class="on">2 LLM → JSON</span>
+    <span>3 你確認</span>
+    <span>4 發布到前台</span>
+  </div>
+
+  <div class="drop">
+    <b>把考程檔案拖到這裡</b>
+    <span>PDF / JPG / PNG · 或從班群把圖片存下來再傳</span>
+  </div>
+
+  <p class="lead" style="margin-top:22px">模型吐出來的草稿（示意，等真的考程再跑）：</p>
+<pre>{
+  "semester": "115-1",
+  "exam": "第一次段考",
+  "source": { "type": "upload", "filename": "8年級考程.jpg" },
+  "dates": ["2026-10-06", "2026-10-07"],
+  "schedule": [
+    { "grade": "g8", "date": "2026-10-06", "period": "1-2", "subject": "國文", "scope": null },
+    { "grade": "g8", "date": "2026-10-06", "period": "3-4", "subject": "英文", "scope": null },
+    { "grade": "g8", "date": "2026-10-06", "period": "5-6", "subject": "數學", "scope": null },
+    { "grade": "g8", "date": "2026-10-07", "period": "1-2", "subject": "理化", "scope": null },
+    { "grade": "g8", "date": "2026-10-07", "period": "3-4", "subject": "歷史", "scope": null },
+    { "grade": "g8", "date": "2026-10-07", "period": "5-6", "subject": "地理", "scope": null }
+  ],
+  "status": "draft"
+}</pre>
+
+  <div class="row">
+    <button class="btn pri" type="button">確認並發布</button>
+    <button class="btn ghost" type="button">科目不對，重跑</button>
+    <a class="btn ghost" href="v1-exam.html">看前台現在的空狀態</a>
+  </div>
+  <div class="ok">發布後，首頁「考程還沒公布」會換成各科時間表。學生不用重找班群。</div>
+</div>
+</body>
+</html>

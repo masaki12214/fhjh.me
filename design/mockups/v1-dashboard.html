@@ -1,0 +1,118 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>FHJH.me — 版本 A：段考優先</title>
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+TC:wght@400;500;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="v1.css">
+<style>
+.exam{margin-top:20px;padding:28px 28px 24px;background:linear-gradient(160deg,#123B6D 0%,#1D4F8F 100%);color:#fff;border:0;position:relative;overflow:hidden}
+.exam::after{content:"";position:absolute;right:-50px;top:-50px;width:200px;height:200px;border-radius:50%;background:rgba(255,255,255,.07)}
+.exam .kicker{font-size:13px;opacity:.85;margin:0 0 6px}
+.exam h1{font-size:28px;margin:0 0 16px;font-weight:700}
+.facts{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:16px}
+.fact{background:rgba(255,255,255,.1);border:1px solid rgba(255,255,255,.16);border-radius:12px;padding:14px 16px}
+.fact .l{font-size:12px;opacity:.8}
+.fact .v{font-size:20px;font-weight:700;margin-top:2px}
+.fact .s{font-size:12.5px;opacity:.8;margin-top:4px}
+.fact.wait .v{color:#FFE08A}
+.grade{display:flex;gap:6px;flex-wrap:wrap;margin:4px 0 16px}
+.grade span{font-size:13px;border:1px solid rgba(255,255,255,.4);padding:6px 12px;border-radius:999px}
+.grade span.on{background:#fff;color:var(--navy);font-weight:700;border-color:#fff}
+.exam .btn{display:inline-block;background:#fff;color:var(--navy);font-weight:700;padding:12px 18px;border-radius:10px;font-size:15px}
+.exam .src{margin-top:14px;font-size:12px;opacity:.75}
+
+.tools{display:grid;grid-template-columns:repeat(3,1fr);gap:12px;margin-top:18px}
+.tools a{padding:16px}
+.tools b{display:block;font-size:15px;color:var(--navy)}
+.tools span{font-size:13px;color:var(--muted)}
+
+.quiet{margin:22px 0 8px;font-size:13px;color:var(--muted)}
+.quiet a{color:var(--blue);font-weight:600}
+
+@media (max-width:720px){
+  .exam{margin-top:14px;padding:20px 16px}
+  .exam h1{font-size:24px}
+  .facts{grid-template-columns:1fr}
+  .exam .btn{display:block;text-align:center}
+  .tools{grid-template-columns:1fr}
+}
+</style>
+</head>
+<body>
+<header class="topbar">
+  <input type="checkbox" id="search-toggle">
+  <input type="checkbox" id="nav-toggle">
+  <div class="wrap topbar-row">
+    <a class="brand" href="v1-dashboard.html">FHJH.me<span class="tag">非官方</span><small>學生製作 · 非校方官方網站</small></a>
+    <nav class="nav">
+      <a class="active" href="v1-dashboard.html">首頁</a>
+      <a href="v1-exam.html">段考中心</a>
+      <a href="v1-wiki.html">請假／Wiki</a>
+      <a href="#">常用連結</a>
+    </nav>
+    <label class="search" for="q"><span aria-hidden="true">🔍</span><input id="q" type="search" placeholder="搜尋段考、請假…"><kbd>/</kbd></label>
+    <div class="icon-btns">
+      <label class="icon-btn" for="search-toggle" aria-label="搜尋">🔍</label>
+      <label class="icon-btn menu-only" for="nav-toggle" aria-label="選單">☰</label>
+    </div>
+  </div>
+  <nav class="drawer wrap">
+    <a href="v1-dashboard.html">首頁</a>
+    <a href="v1-exam.html">段考中心</a>
+    <a href="v1-wiki.html">請假／Wiki</a>
+    <a href="#">常用連結</a>
+  </nav>
+</header>
+<div class="notice-bar"><div class="wrap">
+  <span class="dot"></span>
+  <span class="full">學生製作 · 非校方官方網站 · 段考日期依行事曆；考程公布後會更新到這頁</span>
+  <span class="short">非官方 · 考程還沒公布</span>
+</div></div>
+
+<main class="wrap">
+  <div class="card exam">
+    <p class="kicker">115 學年度第 1 學期 · 現在最重要的一件事</p>
+    <h1>第一次段考</h1>
+    <div class="grade"><span>七</span><span class="on">八</span><span>九</span><span>十</span><span>十一</span><span>十二</span></div>
+    <div class="facts">
+      <div class="fact">
+        <div class="l">什麼時候</div>
+        <div class="v">10/06 – 10/07</div>
+        <div class="s">行事曆上的段考日 · 星期二、三</div>
+      </div>
+      <div class="fact wait">
+        <div class="l">考程（哪一天考哪一科）</div>
+        <div class="v">還沒公布</div>
+        <div class="s">一公布就會出現在段考中心</div>
+      </div>
+    </div>
+    <a class="btn" href="v1-exam.html">打開段考中心</a>
+    <div class="src">日期來源：115-1 中學部行事曆（學生版）。各科時間表尚未上傳。</div>
+  </div>
+
+  <div class="tools">
+    <a class="card" href="v1-wiki.html"><b>請假怎麼辦</b><span>APP 請假、要附什麼證明</span></a>
+    <a class="card" href="#"><b>校務系統</b><span>成績、出缺席（要登入）</span></a>
+    <a class="card" href="v1-wiki.html"><b>補考申請</b><span>重大考試缺考怎麼補</span></a>
+  </div>
+  <p class="quiet">競賽轉知、招生、徵才不放在首頁。需要時再進<a href="v1-notice.html">公告整理</a>。</p>
+</main>
+
+<footer>
+  <div class="wrap">
+    <div><b>FHJH.me</b> 學生製作，非校方官方網站。重要規定以官方原文為準。</div>
+    <div class="links"><a href="#">回報錯誤</a><a href="v1-admin-exam.html">後台：上傳考程</a></div>
+  </div>
+</footer>
+
+<nav class="tabbar">
+  <a class="on" href="v1-dashboard.html"><span class="i">⌂</span>首頁</a>
+  <a href="v1-exam.html"><span class="i">考</span>段考</a>
+  <a href="v1-wiki.html"><span class="i">?</span>請假</a>
+  <a href="#"><span class="i">連</span>連結</a>
+  <a href="v1-notice.html"><span class="i">公</span>公告</a>
+</nav>
+</body>
+</html>

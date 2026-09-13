@@ -1,0 +1,1101 @@
+openapi: 3.1.0
+info:
+  title: FHJH.me Public API
+  version: 1.0.0-draft
+  summary: 學生製作之非官方校園資訊 API；資料來源為臺北市私立復興實驗高級中學官網等公開頁面。
+  description: |
+    - 所有回應為 JSON（UTF-8），時間為 ISO 8601 含時區。
+    - 每個代表官網內容的物件帶 `source`（含 `credibility: official`）；學生整理欄位帶各自的 `credibility`。
+    - 公開 GET 端點免認證，快取 5 分鐘，支援 `If-None-Match`。
+    - 寫入端點需 Cloudflare Turnstile token。
+  license:
+    name: AGPL-3.0-only
+    identifier: AGPL-3.0-only
+security: []   # 公開端點免認證；寫入端點以 Turnstile token（body 內）驗證，管理端另由 Cloudflare Access 保護
+servers:
+  - url: https://api.fhjh.me/v1
+    description: production
+  - url: https://api-staging.fhjh.me/v1
+    description: staging
+
+tags:
+  - name: home
+  - name: notices
+  - name: events
+  - name: exams
+  - name: wiki
+  - name: links
+  - name: pages
+  - name: search
+  - name: meta
+  - name: write
+
+paths:
+  /home:
+    get:
+      tags: [home]
+      summary: 首頁彙整
+      parameters:
+        - $ref: '#/components/parameters/audience'
+      responses:
+        '200':
+          description: OK
+          headers: { ETag: { $ref: '#/components/headers/ETag' } }
+          content:
+            application/json:
+              schema:
+                type: object
+                required: [data, meta]
+                properties:
+                  data: { $ref: '#/components/schemas/Home' }
+                  meta: { $ref: '#/components/schemas/Meta' }
+
+  /notices:
+    get:
+      tags: [notices]
+      summary: 公告列表
+      parameters:
+        - name: dept
+          in: query
+          description: 學部 slug，逗號分隔
+          schema: { type: string, example: "secondary,secondary-bilingual" }
+        - $ref: '#/components/parameters/audience'
+        - name: tag
+          in: query
+          schema: { type: string, example: 校外競賽 }
+        - name: has_deadline
+          in: query
+          schema: { type: boolean }
+        - name: since
+          in: query
+          description: 只回傳此時間後發布或內容變更者
+          schema: { type: string, format: date-time }
+        - name: q
+          in: query
+          schema: { type: string, minLength: 2 }
+        - name: sort
+          in: query
+          schema: { type: string, enum: [published_at, deadline_at, relevance], default: published_at }
+        - name: include_hidden
+          in: query
+          description: 是否包含徵才、採購、非中學生內容
+          schema: { type: boolean, default: false }
+        - name: fields
+          in: query
+          schema: { type: string, enum: [list, full], default: list }
+        - $ref: '#/components/parameters/limit'
+        - $ref: '#/components/parameters/cursor'
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: array
+                    items: { $ref: '#/components/schemas/Notice' }
+                  meta: { $ref: '#/components/schemas/Meta' }
+        '429': { $ref: '#/components/responses/RateLimited' }
+
+  /notices/{nid}:
+    get:
+      tags: [notices]
+      summary: 單則公告
+      parameters:
+        - name: nid
+          in: path
+          required: true
+          schema: { type: integer, example: 8150 }
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data: { $ref: '#/components/schemas/Notice' }
+                  meta: { $ref: '#/components/schemas/Meta' }
+        '404': { $ref: '#/components/responses/NotFound' }
+
+  /deadlines:
+    get:
+      tags: [events]
+      summary: 快到期（僅已確認之截止日）
+      parameters:
+        - name: within_days
+          in: query
+          schema: { type: integer, minimum: 1, maximum: 60, default: 14 }
+        - $ref: '#/components/parameters/audience'
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: array
+                    items: { $ref: '#/components/schemas/Event' }
+                  meta: { $ref: '#/components/schemas/Meta' }
+
+  /events:
+    get:
+      tags: [events]
+      summary: 事件列表
+      parameters:
+        - name: from
+          in: query
+          schema: { type: string, format: date }
+        - name: to
+          in: query
+          schema: { type: string, format: date }
+        - name: category
+          in: query
+          schema: { $ref: '#/components/schemas/EventCategory' }
+        - $ref: '#/components/parameters/audience'
+        - $ref: '#/components/parameters/limit'
+        - $ref: '#/components/parameters/cursor'
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: array
+                    items: { $ref: '#/components/schemas/Event' }
+                  meta: { $ref: '#/components/schemas/Meta' }
+
+  /events/{id}:
+    get:
+      tags: [events]
+      summary: 單一事件
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema: { type: integer }
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data: { $ref: '#/components/schemas/Event' }
+                  meta: { $ref: '#/components/schemas/Meta' }
+        '404': { $ref: '#/components/responses/NotFound' }
+
+  /events.ics:
+    get:
+      tags: [events]
+      summary: iCalendar 訂閱
+      parameters:
+        - $ref: '#/components/parameters/audience'
+        - name: category
+          in: query
+          schema: { $ref: '#/components/schemas/EventCategory' }
+      responses:
+        '200':
+          description: OK
+          content:
+            text/calendar:
+              schema: { type: string }
+
+  /semesters:
+    get:
+      tags: [exams]
+      summary: 學期列表
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: array
+                    items: { $ref: '#/components/schemas/Semester' }
+                  meta: { $ref: '#/components/schemas/Meta' }
+
+  /exams:
+    get:
+      tags: [exams]
+      summary: 段考列表
+      parameters:
+        - name: semester
+          in: query
+          description: 預設為 current
+          schema: { type: string, example: 115-1 }
+        - $ref: '#/components/parameters/grade'
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: array
+                    items: { $ref: '#/components/schemas/ExamSummary' }
+                  meta: { $ref: '#/components/schemas/Meta' }
+
+  /exams/next:
+    get:
+      tags: [exams]
+      summary: 下一個段考（首頁倒數）
+      parameters:
+        - $ref: '#/components/parameters/grade'
+      responses:
+        '200':
+          description: OK；沒有即將到來的段考時 data 為 null
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    oneOf:
+                      - $ref: '#/components/schemas/ExamSummary'
+                      - type: 'null'
+                  meta: { $ref: '#/components/schemas/Meta' }
+
+  /exams/{id}:
+    get:
+      tags: [exams]
+      summary: 段考詳情
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema: { type: integer }
+        - $ref: '#/components/parameters/grade'
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data: { $ref: '#/components/schemas/Exam' }
+                  meta: { $ref: '#/components/schemas/Meta' }
+        '404': { $ref: '#/components/responses/NotFound' }
+
+  /wiki:
+    get:
+      tags: [wiki]
+      summary: Wiki 列表
+      parameters:
+        - name: category
+          in: query
+          schema: { $ref: '#/components/schemas/WikiCategory' }
+        - name: q
+          in: query
+          schema: { type: string }
+        - $ref: '#/components/parameters/limit'
+        - $ref: '#/components/parameters/cursor'
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: array
+                    items: { $ref: '#/components/schemas/WikiPageSummary' }
+                  meta: { $ref: '#/components/schemas/Meta' }
+
+  /wiki/{slug}:
+    get:
+      tags: [wiki]
+      summary: Wiki 頁
+      parameters:
+        - name: slug
+          in: path
+          required: true
+          schema: { type: string, example: leave-request }
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data: { $ref: '#/components/schemas/WikiPage' }
+                  meta: { $ref: '#/components/schemas/Meta' }
+        '404': { $ref: '#/components/responses/NotFound' }
+
+  /links:
+    get:
+      tags: [links]
+      summary: 常用連結（依分類分組）
+      parameters:
+        - name: category
+          in: query
+          schema: { $ref: '#/components/schemas/LinkCategory' }
+        - $ref: '#/components/parameters/audience'
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: array
+                    items:
+                      type: object
+                      properties:
+                        category: { $ref: '#/components/schemas/LinkCategory' }
+                        label: { type: string, example: 校務系統 }
+                        links:
+                          type: array
+                          items: { $ref: '#/components/schemas/Link' }
+                  meta: { $ref: '#/components/schemas/Meta' }
+
+  /pages:
+    get:
+      tags: [pages]
+      summary: 官網頁面型節點索引（規章、表單、計畫辦法）
+      parameters:
+        - name: section
+          in: query
+          schema: { type: string, enum: [faculty-introduction, administrative-unit, feature-center, garden, honor] }
+        - name: hub
+          in: query
+          description: 官網子選單路徑，例如 /faculty-introduction/secondary/secondary-1
+          schema: { type: string }
+        - name: q
+          in: query
+          schema: { type: string }
+        - $ref: '#/components/parameters/limit'
+        - $ref: '#/components/parameters/cursor'
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: array
+                    items: { $ref: '#/components/schemas/PageSummary' }
+                  meta: { $ref: '#/components/schemas/Meta' }
+
+  /pages/{nid}:
+    get:
+      tags: [pages]
+      summary: 單一頁面（含附件）
+      parameters:
+        - name: nid
+          in: path
+          required: true
+          schema: { type: integer, example: 802 }
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data: { $ref: '#/components/schemas/Page' }
+                  meta: { $ref: '#/components/schemas/Meta' }
+        '404': { $ref: '#/components/responses/NotFound' }
+
+  /search:
+    get:
+      tags: [search]
+      summary: 全站搜尋
+      parameters:
+        - name: q
+          in: query
+          required: true
+          schema: { type: string, minLength: 2, maxLength: 60 }
+        - name: type
+          in: query
+          description: 逗號分隔
+          schema: { type: string, example: "notice,wiki,exam,link,page" }
+        - $ref: '#/components/parameters/limit'
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: array
+                    items: { $ref: '#/components/schemas/SearchHit' }
+                  meta:
+                    allOf:
+                      - $ref: '#/components/schemas/Meta'
+                      - type: object
+                        properties:
+                          query: { type: string }
+                          took_ms: { type: integer }
+
+  /departments:
+    get:
+      tags: [meta]
+      summary: 學部字典與已出現的標籤
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: object
+                    properties:
+                      departments:
+                        type: array
+                        items: { $ref: '#/components/schemas/Department' }
+                      tags_seen:
+                        type: array
+                        items: { type: string }
+                  meta: { $ref: '#/components/schemas/Meta' }
+
+  /sources:
+    get:
+      tags: [meta]
+      summary: 資料來源與抓取政策
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: array
+                    items:
+                      type: object
+                      properties:
+                        key: { type: string, example: fhjh-www }
+                        base_url: { type: string, format: uri }
+                        tier: { type: string, enum: [A, B, C, D] }
+                        crawl_enabled: { type: boolean }
+                        min_interval_minutes: { type: integer }
+                        last_crawl_at: { type: [string, 'null'], format: date-time }
+                        notes: { type: [string, 'null'] }
+                  meta: { $ref: '#/components/schemas/Meta' }
+
+  /status:
+    get:
+      tags: [meta]
+      summary: 系統健康度
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: object
+                    properties:
+                      last_crawl:
+                        type: object
+                        additionalProperties: { type: string, format: date-time }
+                        example: { news-hot: '2026-09-13T09:00:12+08:00' }
+                      counts:
+                        type: object
+                        additionalProperties: { type: integer }
+                      current_semester: { type: string, example: 115-1 }
+                      healthy: { type: boolean }
+                  meta: { $ref: '#/components/schemas/Meta' }
+
+  /feeds/notices.atom:
+    get:
+      tags: [notices]
+      summary: 公告 Atom feed
+      parameters:
+        - name: dept
+          in: query
+          schema: { type: string }
+        - $ref: '#/components/parameters/audience'
+      responses:
+        '200':
+          description: OK
+          content:
+            application/atom+xml:
+              schema: { type: string }
+
+  /reports:
+    post:
+      tags: [write]
+      summary: 回報錯誤／侵權／個資
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema: { $ref: '#/components/schemas/ReportCreate' }
+      responses:
+        '202':
+          description: Accepted
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: object
+                    properties:
+                      id: { type: integer }
+                      status: { type: string, enum: [open] }
+        '400': { $ref: '#/components/responses/BadRequest' }
+        '429': { $ref: '#/components/responses/RateLimited' }
+
+  /submissions:
+    post:
+      tags: [write]
+      summary: 投稿
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema: { $ref: '#/components/schemas/SubmissionCreate' }
+      responses:
+        '202':
+          description: Accepted
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: object
+                    properties:
+                      id: { type: integer }
+                      status: { type: string, enum: [pending] }
+                      status_token: { type: string, description: 查詢審核狀態用，僅此一次回傳 }
+        '400': { $ref: '#/components/responses/BadRequest' }
+        '429': { $ref: '#/components/responses/RateLimited' }
+
+  /submissions/{id}:
+    get:
+      tags: [write]
+      summary: 查詢投稿狀態
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema: { type: integer }
+        - name: token
+          in: query
+          required: true
+          schema: { type: string }
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: object
+                    properties:
+                      id: { type: integer }
+                      kind: { $ref: '#/components/schemas/SubmissionKind' }
+                      status: { type: string, enum: [pending, approved, rejected, spam] }
+                      decision_note: { type: [string, 'null'] }
+                      created_at: { type: string, format: date-time }
+                      decided_at: { type: [string, 'null'], format: date-time }
+        '404': { $ref: '#/components/responses/NotFound' }
+
+components:
+  headers:
+    ETag:
+      schema: { type: string }
+
+  parameters:
+    audience:
+      name: audience
+      in: query
+      description: 對象碼（g7…g12、junior、senior、bilingual、all、parents、staff）
+      schema: { $ref: '#/components/schemas/Audience' }
+    grade:
+      name: grade
+      in: query
+      schema: { type: string, enum: [g7, g8, g9, g10, g11, g12] }
+    limit:
+      name: limit
+      in: query
+      schema: { type: integer, minimum: 1, maximum: 50, default: 20 }
+    cursor:
+      name: cursor
+      in: query
+      schema: { type: string }
+
+  responses:
+    NotFound:
+      description: Not found
+      content:
+        application/problem+json:
+          schema: { $ref: '#/components/schemas/Problem' }
+    BadRequest:
+      description: Validation failed
+      content:
+        application/problem+json:
+          schema: { $ref: '#/components/schemas/Problem' }
+    RateLimited:
+      description: Too many requests
+      headers:
+        Retry-After: { schema: { type: integer } }
+      content:
+        application/problem+json:
+          schema: { $ref: '#/components/schemas/Problem' }
+
+  schemas:
+    Meta:
+      type: object
+      required: [generated_at, disclaimer]
+      properties:
+        generated_at: { type: string, format: date-time }
+        disclaimer:
+          type: string
+          const: FHJH.me 為學生製作之非官方整理，資料來源為臺北市私立復興實驗高級中學官網等公開頁面；重要資訊請以官方原文為準。
+        next_cursor: { type: [string, 'null'] }
+        total: { type: integer }
+
+    Problem:
+      type: object
+      properties:
+        type: { type: string, format: uri }
+        title: { type: string }
+        status: { type: integer }
+        detail: { type: string }
+        instance: { type: string }
+
+    Credibility:
+      type: string
+      enum: [official, student_summary, submission, unverified]
+
+    Audience:
+      type: string
+      enum: [g7, g8, g9, g10, g11, g12, junior, senior, bilingual, all, parents, staff, none]
+
+    PublishStatus:
+      type: string
+      enum: [draft, published, archived]
+
+    Source:
+      type: object
+      required: [name, url, credibility]
+      properties:
+        name: { type: string, example: 臺北市私立復興實驗高級中學 訊息公告 }
+        url: { type: string, format: uri }
+        fetched_at: { type: string, format: date-time }
+        credibility: { $ref: '#/components/schemas/Credibility' }
+
+    Department:
+      type: object
+      properties:
+        slug: { type: string, example: secondary }
+        name: { type: string, example: 中學部 }
+        color: { type: [string, 'null'], example: '#4C91D6' }
+        student_relevant: { type: boolean }
+
+    Attachment:
+      type: object
+      properties:
+        label: { type: string }
+        url: { type: string, format: uri }
+        filename: { type: [string, 'null'] }
+        mime: { type: [string, 'null'] }
+        size_bytes: { type: [integer, 'null'] }
+
+    NoticeStudent:
+      type: object
+      description: 學生整理層；null 代表尚未加註
+      properties:
+        credibility: { $ref: '#/components/schemas/Credibility' }
+        status: { $ref: '#/components/schemas/PublishStatus' }
+        audience:
+          type: array
+          items: { $ref: '#/components/schemas/Audience' }
+        summary: { type: [string, 'null'], maxLength: 200 }
+        action: { type: [string, 'null'] }
+        deadline_at: { type: [string, 'null'], format: date-time }
+        deadline_confidence: { type: string, enum: [none, auto, confirmed] }
+        importance: { type: integer, minimum: 0, maximum: 3 }
+        updated_at: { type: string, format: date-time }
+
+    Notice:
+      type: object
+      required: [nid, title, title_clean, tags, departments, published_at, url, source]
+      properties:
+        nid: { type: integer, example: 8150 }
+        title: { type: string }
+        title_clean: { type: string }
+        tags:
+          type: array
+          items: { type: string }
+        subject: { type: [string, 'null'], description: 公文主旨 }
+        departments:
+          type: array
+          items: { $ref: '#/components/schemas/Department' }
+        published_at: { type: string, format: date-time }
+        origin_updated_at: { type: [string, 'null'], format: date-time }
+        view_count: { type: [integer, 'null'] }
+        summary: { type: [string, 'null'] }
+        body_html: { type: [string, 'null'], description: 僅 fields=full 或單筆時回傳 }
+        attachments:
+          type: array
+          items: { $ref: '#/components/schemas/Attachment' }
+        url: { type: string, format: uri, description: fhjh.me 頁面 }
+        source: { $ref: '#/components/schemas/Source' }
+        student:
+          oneOf:
+            - $ref: '#/components/schemas/NoticeStudent'
+            - type: 'null'
+        relevance_score: { type: number, minimum: 0, maximum: 1 }
+        is_hidden: { type: boolean }
+        is_gone: { type: boolean, description: 官網已移除 }
+
+    EventCategory:
+      type: string
+      enum: [deadline, exam, activity, holiday, club, competition, meeting]
+
+    Event:
+      type: object
+      required: [id, title, starts_at, category, audience, credibility]
+      properties:
+        id: { type: integer }
+        title: { type: string }
+        starts_at: { type: string, format: date-time }
+        ends_at: { type: [string, 'null'], format: date-time }
+        all_day: { type: boolean }
+        category: { $ref: '#/components/schemas/EventCategory' }
+        audience:
+          type: array
+          items: { $ref: '#/components/schemas/Audience' }
+        location: { type: [string, 'null'] }
+        description: { type: [string, 'null'] }
+        url: { type: [string, 'null'], format: uri }
+        origin:
+          type: object
+          properties:
+            type: { type: string, enum: [notice, exam, calendar_pdf, garden_calendar, manual] }
+            ref: { type: [string, 'null'] }
+        credibility: { $ref: '#/components/schemas/Credibility' }
+        days_until: { type: integer }
+
+    Semester:
+      type: object
+      properties:
+        id: { type: string, example: 115-1 }
+        academic_year: { type: integer, example: 115 }
+        term: { type: integer, enum: [1, 2] }
+        starts_on: { type: string, format: date }
+        ends_on: { type: string, format: date }
+        is_current: { type: boolean }
+        calendar_pdf_url: { type: [string, 'null'], format: uri }
+
+    ExamSummary:
+      type: object
+      properties:
+        id: { type: integer }
+        semester: { $ref: '#/components/schemas/Semester' }
+        seq: { type: integer }
+        name: { type: string, example: 第一次段考 }
+        kind: { type: string, enum: [regular, mock, final, other] }
+        starts_on: { type: string, format: date }
+        ends_on: { type: string, format: date }
+        days_until: { type: integer }
+        grades:
+          type: array
+          items: { type: string }
+        source: { $ref: '#/components/schemas/Source' }
+        status: { $ref: '#/components/schemas/PublishStatus' }
+
+    ExamSubject:
+      type: object
+      properties:
+        grade: { type: string }
+        subject: { type: string }
+        exam_date: { type: [string, 'null'], format: date }
+        scope: { type: [string, 'null'] }
+        source_url: { type: [string, 'null'], format: uri }
+        credibility: { $ref: '#/components/schemas/Credibility' }
+        updated_at: { type: string, format: date-time }
+
+    ExamResource:
+      type: object
+      properties:
+        id: { type: integer }
+        grade: { type: string }
+        subject: { type: [string, 'null'] }
+        title: { type: string }
+        url: { type: string, format: uri }
+        kind: { type: string, enum: [teacher_public, student_notes, link] }
+        contributor_display: { type: [string, 'null'] }
+        license: { type: [string, 'null'] }
+        credibility: { $ref: '#/components/schemas/Credibility' }
+
+    Exam:
+      allOf:
+        - $ref: '#/components/schemas/ExamSummary'
+        - type: object
+          properties:
+            subjects:
+              type: array
+              items: { $ref: '#/components/schemas/ExamSubject' }
+            resources:
+              type: array
+              items: { $ref: '#/components/schemas/ExamResource' }
+            notes: { type: [string, 'null'] }
+
+    WikiCategory:
+      type: string
+      enum: [procedure, rule, place, contact, system, faq]
+
+    WikiPageSummary:
+      type: object
+      properties:
+        slug: { type: string }
+        title: { type: string }
+        category: { $ref: '#/components/schemas/WikiCategory' }
+        last_verified_at: { type: [string, 'null'], format: date }
+        is_stale: { type: boolean }
+        credibility: { $ref: '#/components/schemas/Credibility' }
+        updated_at: { type: string, format: date-time }
+
+    WikiPage:
+      allOf:
+        - $ref: '#/components/schemas/WikiPageSummary'
+        - type: object
+          properties:
+            body_md: { type: string }
+            sources:
+              type: array
+              items:
+                type: object
+                properties:
+                  title: { type: string }
+                  url: { type: string, format: uri }
+            related_notices:
+              type: array
+              items: { type: integer }
+            version: { type: integer }
+
+    LinkCategory:
+      type: string
+      enum: [system, learning, library, form, official, external]
+
+    Link:
+      type: object
+      properties:
+        id: { type: integer }
+        title: { type: string }
+        url: { type: string, format: uri }
+        category: { $ref: '#/components/schemas/LinkCategory' }
+        audience:
+          type: array
+          items: { $ref: '#/components/schemas/Audience' }
+        description: { type: [string, 'null'] }
+        requires_login: { type: boolean }
+        on_campus_only: { type: boolean }
+        help:
+          type: object
+          properties:
+            wiki_slug: { type: [string, 'null'] }
+            official_url: { type: [string, 'null'], format: uri }
+        origin:
+          type: object
+          properties:
+            type: { type: string, enum: [eschool, garden, page, manual] }
+            ref: { type: [string, 'null'] }
+        is_broken: { type: boolean }
+        last_checked_at: { type: [string, 'null'], format: date-time }
+
+    PageSummary:
+      type: object
+      properties:
+        nid: { type: integer, example: 802 }
+        section: { type: string }
+        hub_path: { type: [string, 'null'] }
+        hub_label: { type: [string, 'null'], example: 學生相關規則 }
+        title: { type: string, example: 學務處規章 }
+        published_at: { type: [string, 'null'], format: date-time }
+        attachment_count: { type: integer }
+        source: { $ref: '#/components/schemas/Source' }
+
+    Page:
+      allOf:
+        - $ref: '#/components/schemas/PageSummary'
+        - type: object
+          properties:
+            body_html: { type: [string, 'null'] }
+            attachments:
+              type: array
+              items: { $ref: '#/components/schemas/Attachment' }
+
+    SearchHit:
+      type: object
+      properties:
+        type: { type: string, enum: [notice, wiki, exam, link, page, event] }
+        id: { type: string }
+        title: { type: string }
+        snippet: { type: string, description: 命中片段，含 <mark> }
+        url: { type: string }
+        published_at: { type: [string, 'null'], format: date-time }
+        credibility: { $ref: '#/components/schemas/Credibility' }
+        score: { type: number }
+
+    Home:
+      type: object
+      properties:
+        highlights:
+          type: array
+          maxItems: 3
+          items:
+            type: object
+            properties:
+              kind: { type: string, enum: [notice, event, exam, wiki] }
+              id: { type: string }
+              title: { type: string }
+              line: { type: string, description: 一行文案，例：超越盃數學競賽：週五截止 }
+              url: { type: string }
+        next_exam:
+          oneOf:
+            - $ref: '#/components/schemas/ExamSummary'
+            - type: 'null'
+        deadlines:
+          type: array
+          items: { $ref: '#/components/schemas/Event' }
+        latest_notices:
+          type: array
+          items: { $ref: '#/components/schemas/Notice' }
+        recent_resources:
+          type: array
+          items: { $ref: '#/components/schemas/ExamResource' }
+        counts:
+          type: object
+          additionalProperties: { type: integer }
+        semester: { type: string, example: 115-1 }
+        last_crawl_at: { type: [string, 'null'], format: date-time }
+
+    ReportCreate:
+      type: object
+      required: [target_type, target_id, reason, turnstile_token]
+      properties:
+        target_type: { type: string, enum: [notice, event, exam, wiki, link, resource, site] }
+        target_id: { type: string }
+        reason: { type: string, enum: [wrong, outdated, copyright, privacy, broken_link, other] }
+        message: { type: string, maxLength: 1000 }
+        contact: { type: string, maxLength: 120, description: 選填；僅審核者可見，30 天後清除 }
+        turnstile_token: { type: string }
+
+    SubmissionKind:
+      type: string
+      enum: [exam_scope, exam_resource, event, wiki_edit, link, notice_hint]
+
+    SubmissionCreate:
+      type: object
+      required: [kind, payload, agree_terms, turnstile_token]
+      properties:
+        kind: { $ref: '#/components/schemas/SubmissionKind' }
+        payload:
+          oneOf:
+            - $ref: '#/components/schemas/SubmissionExamScope'
+            - $ref: '#/components/schemas/SubmissionExamResource'
+            - $ref: '#/components/schemas/SubmissionEvent'
+            - $ref: '#/components/schemas/SubmissionWikiEdit'
+            - $ref: '#/components/schemas/SubmissionLink'
+            - $ref: '#/components/schemas/SubmissionNoticeHint'
+        contact: { type: string, maxLength: 120 }
+        agree_terms: { type: boolean, const: true }
+        turnstile_token: { type: string }
+
+    SubmissionExamScope:
+      type: object
+      required: [exam_id, grade, subject, scope_text]
+      properties:
+        exam_id: { type: integer }
+        grade: { type: string }
+        subject: { type: string, maxLength: 20 }
+        scope_text: { type: string, maxLength: 300 }
+        evidence_url: { type: string, format: uri }
+
+    SubmissionExamResource:
+      type: object
+      required: [exam_id, grade, title, url, license]
+      properties:
+        exam_id: { type: integer }
+        grade: { type: string }
+        subject: { type: string }
+        title: { type: string, maxLength: 80 }
+        url: { type: string, format: uri }
+        contributor_display: { type: string, maxLength: 20, description: 暱稱，勿填真名 }
+        license: { type: string, enum: [CC-BY-NC, CC0, all-rights-reserved] }
+        is_own_work: { type: boolean, const: true }
+
+    SubmissionEvent:
+      type: object
+      required: [title, starts_at, category]
+      properties:
+        title: { type: string, maxLength: 80 }
+        starts_at: { type: string, format: date-time }
+        ends_at: { type: string, format: date-time }
+        category: { $ref: '#/components/schemas/EventCategory' }
+        audience:
+          type: array
+          items: { $ref: '#/components/schemas/Audience' }
+        url: { type: string, format: uri }
+        description: { type: string, maxLength: 500 }
+
+    SubmissionWikiEdit:
+      type: object
+      required: [slug, body_md]
+      properties:
+        slug: { type: string, description: 既有頁 slug；新頁請填 new }
+        title: { type: string, maxLength: 60 }
+        body_md: { type: string, maxLength: 8000 }
+        sources:
+          type: array
+          items: { type: string, format: uri }
+        note: { type: string, maxLength: 200 }
+
+    SubmissionLink:
+      type: object
+      required: [title, url]
+      properties:
+        title: { type: string, maxLength: 60 }
+        url: { type: string, format: uri }
+        category: { $ref: '#/components/schemas/LinkCategory' }
+        description: { type: string, maxLength: 200 }
+
+    SubmissionNoticeHint:
+      type: object
+      required: [nid]
+      properties:
+        nid: { type: integer }
+        deadline_at: { type: string, format: date-time }
+        audience:
+          type: array
+          items: { $ref: '#/components/schemas/Audience' }
+        action: { type: string, maxLength: 120 }
+        note: { type: string, maxLength: 300 }

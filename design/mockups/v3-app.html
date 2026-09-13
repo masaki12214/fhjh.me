@@ -1,0 +1,246 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>FHJH.me — 版本 C：工具型 App</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+TC:wght@400;500;700&display=swap" rel="stylesheet">
+<style>
+:root{
+  --bg:#0F172A; --panel:#111C33; --panel-2:#16233F; --line:#233152; --ink:#E6EDF7; --muted:#8FA1BF; --dim:#5D6E8C;
+  --teal:#2DD4BF; --teal-bg:rgba(45,212,191,.14);
+  --green:#34D399; --green-bg:rgba(52,211,153,.14); --blue:#60A5FA; --blue-bg:rgba(96,165,250,.16); --purple:#C084FC; --purple-bg:rgba(192,132,252,.16); --amber:#FBBF24; --amber-bg:rgba(251,191,36,.16); --red:#FB7185;
+  --r:12px;
+}
+*{box-sizing:border-box}
+html,body{margin:0;background:var(--bg);color:var(--ink);font-family:"Noto Sans TC","WenQuanYi Micro Hei","Droid Sans Fallback",sans-serif;font-size:14.5px;line-height:1.5;font-synthesis:none}
+a{color:inherit;text-decoration:none}
+.shell{display:grid;grid-template-columns:232px 1fr;min-height:100vh}
+
+/* sidebar */
+.side{background:var(--panel);border-right:1px solid var(--line);padding:18px 14px;display:flex;flex-direction:column;gap:6px;position:sticky;top:0;height:100vh}
+.logo{display:flex;align-items:center;gap:10px;padding:6px 8px 16px}
+.logo .mark{width:34px;height:34px;border-radius:10px;background:linear-gradient(135deg,var(--teal),#3B82F6);display:grid;place-items:center;font-weight:700;color:#06233A}
+.logo b{font-size:17px;font-weight:700}
+.logo small{display:block;font-size:11px;color:var(--muted);font-weight:500}
+.side a.item{display:flex;align-items:center;gap:10px;padding:9px 10px;border-radius:9px;color:var(--muted);font-weight:500}
+.side a.item .i{width:22px;text-align:center;font-size:15px}
+.side a.item.on{background:var(--panel-2);color:var(--ink)}
+.side a.item .n{margin-left:auto;font-size:11px;background:var(--line);padding:1px 7px;border-radius:999px;color:var(--muted)}
+.side .sp{flex:1}
+.side .foot{font-size:11.5px;color:var(--dim);padding:10px 8px;border-top:1px solid var(--line);line-height:1.6}
+.side .foot b{color:var(--amber);font-weight:700}
+
+/* main */
+.main{padding:0 28px 40px;max-width:1080px}
+.bar{position:sticky;top:0;z-index:5;background:linear-gradient(var(--bg) 70%,rgba(15,23,42,0));padding:16px 0 12px;display:flex;gap:12px;align-items:center}
+.search{flex:1;display:flex;align-items:center;gap:10px;background:var(--panel);border:1px solid var(--line);border-radius:10px;padding:10px 14px;color:var(--muted)}
+.search kbd{margin-left:auto;font:11px ui-monospace,monospace;background:var(--line);padding:2px 7px;border-radius:5px}
+.chips{display:flex;gap:6px}
+.chip{font-size:12.5px;font-weight:700;padding:6px 11px;border-radius:999px;border:1px solid var(--line);color:var(--muted);background:var(--panel)}
+.chip.on{background:var(--teal-bg);border-color:var(--teal);color:var(--teal)}
+
+.grid{display:grid;grid-template-columns:1fr 1fr 1fr;gap:14px;margin-top:8px}
+.card{background:var(--panel);border:1px solid var(--line);border-radius:var(--r);padding:16px}
+.card h2{font-size:12.5px;letter-spacing:1px;color:var(--muted);margin:0 0 10px;font-weight:700;display:flex;justify-content:space-between;align-items:center}
+.card h2 a{color:var(--teal);font-size:12px;letter-spacing:0}
+.span2{grid-column:span 2}
+
+.exam{background:linear-gradient(135deg,#0E7490 0%,#155E75 45%,#16233F 100%);border-color:#1E5A6E}
+.exam .name{font-size:19px;font-weight:700}
+.exam .num{font-size:60px;font-weight:700;line-height:1;margin:6px 0 4px;letter-spacing:-1px}
+.exam .num small{font-size:16px;font-weight:500;color:#A5F3FC;margin-left:4px}
+.exam .date{font-size:13.5px;color:#CFFAFE}
+.exam .row{display:flex;gap:8px;margin-top:14px;align-items:center;flex-wrap:wrap}
+.exam .btn{background:#fff;color:#0B3B4A;font-weight:700;font-size:13px;padding:7px 12px;border-radius:8px}
+.exam .src{font-size:11.5px;color:#A5F3FC;opacity:.8}
+
+.badge{display:inline-flex;align-items:center;gap:5px;font-size:11px;font-weight:700;padding:2px 8px;border-radius:6px}
+.badge::before{content:"";width:6px;height:6px;border-radius:50%;background:currentColor}
+.b-official{color:var(--green);background:var(--green-bg)}
+.b-student{color:var(--blue);background:var(--blue-bg)}
+.b-sub{color:var(--purple);background:var(--purple-bg)}
+.b-warn{color:var(--amber);background:var(--amber-bg)}
+.dept{font-size:10.5px;font-weight:700;padding:1px 6px;border-radius:4px;background:#1D4ED8;color:#fff}
+.dept.bi{background:#B91C1C}.dept.sp{background:#475569}
+
+.hl{list-style:none;margin:0;padding:0}
+.hl li{display:flex;gap:10px;padding:10px 0;border-top:1px solid var(--line);align-items:flex-start}
+.hl li:first-child{border-top:0;padding-top:0}
+.hl .k{width:8px;height:8px;border-radius:50%;background:var(--teal);margin-top:7px;flex:none}
+.hl .k.amber{background:var(--amber)}.hl .k.gray{background:var(--dim)}
+.hl b{display:block;font-size:14.5px}
+.hl span{font-size:12.5px;color:var(--muted)}
+
+.dl{list-style:none;margin:0;padding:0}
+.dl li{display:grid;grid-template-columns:52px 1fr auto;gap:10px;align-items:center;padding:9px 0;border-top:1px solid var(--line)}
+.dl li:first-child{border-top:0;padding-top:0}
+.dl .d{font-weight:700;font-size:20px;line-height:1;color:var(--ink)}
+.dl .d small{display:block;font-size:10.5px;font-weight:500;color:var(--muted)}
+.dl li.hot .d{color:var(--red)}
+.dl b{display:block;font-size:14px;font-weight:700}
+.dl span{font-size:12px;color:var(--muted)}
+.dl .aud{font-size:11px;color:var(--muted);border:1px solid var(--line);padding:2px 7px;border-radius:999px;white-space:nowrap}
+
+.sec-h{display:flex;justify-content:space-between;align-items:baseline;margin:26px 0 10px}
+.sec-h h2{font-size:16px;margin:0;font-weight:700}
+.sec-h a{font-size:12.5px;color:var(--teal)}
+.list{background:var(--panel);border:1px solid var(--line);border-radius:var(--r);overflow:hidden}
+.row{display:grid;grid-template-columns:60px 1fr auto;gap:14px;padding:14px 16px;border-top:1px solid var(--line);align-items:center}
+.row:first-child{border-top:0}
+.row:hover{background:var(--panel-2)}
+.row .date{font-size:12px;color:var(--muted);font-weight:500}
+.row .date b{display:block;font-size:16px;color:var(--ink)}
+.row h3{margin:0;font-size:14.5px;font-weight:700;line-height:1.4}
+.row h3 em{font-style:normal;color:var(--muted);font-weight:500;font-size:13px}
+.row p{margin:3px 0 0;font-size:13px;color:#B8C4D9}
+.row p.none{color:var(--dim)}
+.row .m{display:flex;gap:6px;align-items:center;margin-top:6px;flex-wrap:wrap}
+.row .r{text-align:right;display:flex;flex-direction:column;align-items:flex-end;gap:6px}
+.row .due{font-size:12.5px;font-weight:700;color:var(--red)}
+.row .due.soft{color:var(--dim);font-weight:500}
+.row .go{color:var(--dim);font-size:16px}
+
+.tiles{display:grid;grid-template-columns:repeat(4,1fr);gap:12px}
+.tile{padding:14px;display:flex;flex-direction:column;gap:2px}
+.tile .i{font-size:20px}
+.tile b{font-size:14.5px}
+.tile span{font-size:12px;color:var(--muted)}
+
+.res{display:grid;grid-template-columns:repeat(3,1fr);gap:12px}
+.res .card{padding:14px}
+.res .k{font-size:11.5px;color:var(--muted)}
+.res b{display:block;margin:3px 0 8px;font-size:14px}
+.res .w{display:flex;justify-content:space-between;align-items:center;font-size:12px;color:var(--muted)}
+
+.tabbar{display:none}
+
+@media (max-width:900px){
+  .shell{grid-template-columns:1fr}
+  .side{display:none}
+  .main{padding:0 14px 84px}
+  .grid{grid-template-columns:1fr}
+  .span2{grid-column:auto}
+  .tiles{grid-template-columns:1fr 1fr}
+  .res{grid-template-columns:1fr}
+  .bar{flex-wrap:wrap;padding-top:12px}
+  .bar .brand{display:flex;align-items:center;gap:8px;width:100%;font-weight:700;font-size:17px}
+  .bar .brand small{font-size:11px;color:var(--amber);font-weight:700;margin-left:auto}
+  .bar .brand .mark{width:26px;height:26px;border-radius:8px;background:linear-gradient(135deg,var(--teal),#3B82F6);display:grid;place-items:center;font-size:12px;color:#06233A}
+  .chips{width:100%;overflow-x:auto;padding-bottom:2px}
+  .row{grid-template-columns:48px 1fr;padding:12px 14px}
+  .row .r{grid-column:2;flex-direction:row;align-items:center}
+  .row .go{display:none}
+  .tabbar{display:grid;grid-template-columns:repeat(5,1fr);position:fixed;left:0;right:0;bottom:0;background:var(--panel);border-top:1px solid var(--line);padding:8px 0 12px;z-index:10}
+  .tabbar a{display:flex;flex-direction:column;align-items:center;gap:2px;font-size:11px;color:var(--muted)}
+  .tabbar a .i{font-size:18px}
+  .tabbar a.on{color:var(--teal)}
+}
+@media (min-width:901px){ .bar .brand{display:none} }
+</style>
+</head>
+<body>
+<div class="shell">
+  <aside class="side">
+    <a class="logo" href="#"><span class="mark">F</span><div><b>FHJH.me</b><small>學生製作 · 非官方</small></div></a>
+    <a class="item on" href="#"><span class="i">⌂</span>首頁</a>
+    <a class="item" href="#"><span class="i">✎</span>段考中心<span class="n">115-1</span></a>
+    <a class="item" href="#"><span class="i">☰</span>公告<span class="n">12 新</span></a>
+    <a class="item" href="#"><span class="i">?</span>校園 Wiki<span class="n">14</span></a>
+    <a class="item" href="#"><span class="i">↗</span>常用連結<span class="n">18</span></a>
+    <a class="item" href="#"><span class="i">▦</span>活動日曆</a>
+    <a class="item" href="#"><span class="i">＋</span>投稿</a>
+    <div class="sp"></div>
+    <div class="foot"><b>非校方官方網站。</b><br>資料整理自學校官網公開頁面；最後同步 09/13 09:00。<br><a href="#" style="color:var(--muted);text-decoration:underline">回報錯誤</a> · <a href="#" style="color:var(--muted);text-decoration:underline">資料來源</a></div>
+  </aside>
+
+  <main class="main">
+    <div class="bar">
+      <div class="brand"><span class="mark">F</span>FHJH.me<small>非官方 · 學生製作</small></div>
+      <div class="search">🔍 搜尋「段考、請假、社團…」<kbd>/</kbd></div>
+      <div class="chips"><a class="chip" href="#">全部</a><a class="chip" href="#">國中</a><a class="chip on" href="#">八年級</a><a class="chip" href="#">高中</a><a class="chip" href="#">雙語部</a></div>
+    </div>
+
+    <div class="grid">
+      <div class="card exam">
+        <h2 style="color:#A5F3FC">下一個大事件</h2>
+        <div class="name">第一次段考</div>
+        <div class="num">23<small>天</small></div>
+        <div class="date">10/06（二）– 10/07（三）· 八年級</div>
+        <div class="row"><a class="btn" href="#">各科範圍 →</a><span class="src">115-1 行事曆（學生版）· 學生整理</span></div>
+      </div>
+      <div class="card">
+        <h2>本週重點 <a href="#">編輯精選</a></h2>
+        <ul class="hl">
+          <li><span class="k"></span><div><b>第一次段考剩 23 天</b><span>各年級範圍陸續整理中</span></div></li>
+          <li><span class="k amber"></span><div><b>超越盃數學競賽 9/19 收件</b><span>國中生可報名 · 簡章看附件</span></div></li>
+          <li><span class="k gray"></span><div><b>本週 12 則新公告</b><span>5 則已有學生摘要</span></div></li>
+        </ul>
+      </div>
+      <div class="card">
+        <h2>快到期 <a href="#">全部</a></h2>
+        <ul class="dl">
+          <li class="hot"><div class="d">2<small>天</small></div><div><b>社團選社確認</b><span>9/15（一）· 範例</span></div><span class="aud">高中</span></li>
+          <li><div class="d">6<small>天</small></div><div><b>超越盃數學競賽報名</b><span>9/19（五）班上收件</span></div><span class="aud">國中</span></li>
+          <li><div class="d">20<small>天</small></div><div><b>國際科展校內報名</b><span>10/3（五）</span></div><span class="aud">全校</span></li>
+          <li><div class="d">29<small>天</small></div><div><b>GoSTEAM 競賽報名</b><span>10/12（一）17:00</span></div><span class="aud">高中</span></li>
+        </ul>
+      </div>
+    </div>
+
+    <div class="sec-h"><h2>最新公告</h2><a href="#">全部公告（含官網全量）→</a></div>
+    <div class="list">
+      <a class="row" href="#">
+        <div class="date"><b>09.11</b>五</div>
+        <div><h3><em>【校外競賽通知】</em>115 學年度全國性超越盃數學競賽報名</h3><p>國中生可報名。班上收件到 9/19，之後由學校統一送件；簡章與報名表看附件。</p><div class="m"><span class="dept">中學部</span><span class="badge b-student">學生整理</span></div></div>
+        <div class="r"><span class="due">截止 9/19</span><span class="go">›</span></div>
+      </a>
+      <a class="row" href="#">
+        <div class="date"><b>09.11</b>五</div>
+        <div><h3><em>【校外競賽】</em>2026 GoSTEAM 科技之星競賽</h3><p>高中生可報名的 STEAM 實作競賽。9/14–10/12 到主辦官網報名，11/21 在三民高中比賽。</p><div class="m"><span class="dept sp">特色中心</span><span class="dept">中學部</span><span class="dept bi">中學雙語</span><span class="badge b-student">學生整理</span></div></div>
+        <div class="r"><span class="due">截止 10/12</span><span class="go">›</span></div>
+      </a>
+      <a class="row" href="#">
+        <div class="date"><b>09.10</b>四</div>
+        <div><h3><em>【校外競賽】</em>2027 年臺灣國際科學展覽會國內學生報名作業注意事項</h3><p class="none">尚無學生摘要 · 顯示官方標題</p><div class="m"><span class="dept">中學部</span><span class="dept bi">中學雙語</span><span class="badge b-official">官方原文</span></div></div>
+        <div class="r"><span class="due soft">—</span><span class="go">›</span></div>
+      </a>
+      <a class="row" href="#">
+        <div class="date"><b>09.10</b>四</div>
+        <div><h3><em>【轉知】</em>第 24 屆週日閱讀科學大師</h3><p class="none">尚無學生摘要</p><div class="m"><span class="dept">中學部</span><span class="dept bi">中學雙語</span><span class="badge b-official">官方原文</span></div></div>
+        <div class="r"><span class="due soft">—</span><span class="go">›</span></div>
+      </a>
+      <a class="row" href="#">
+        <div class="date"><b>09.09</b>三</div>
+        <div><h3><em>【轉知】</em>115 年度高中職性別平等教育宣導月「性別與尊重」議題探究小論文競賽</h3><p>高中生可投稿小論文；校內收件日待輔導室公布。</p><div class="m"><span class="dept">中學部</span><span class="badge b-student">學生整理</span><span class="badge b-warn">截止待確認</span></div></div>
+        <div class="r"><span class="due soft">10/31?</span><span class="go">›</span></div>
+      </a>
+    </div>
+
+    <div class="sec-h"><h2>快速入口</h2></div>
+    <div class="tiles">
+      <a class="card tile" href="#"><span class="i">✎</span><b>段考中心</b><span>日期 · 範圍 · 資源</span></a>
+      <a class="card tile" href="#"><span class="i">?</span><b>校園 Wiki</b><span>請假、補考、證明… 14 篇</span></a>
+      <a class="card tile" href="#"><span class="i">↗</span><b>常用連結</b><span>校務系統、TEAMS… 18 個</span></a>
+      <a class="card tile" href="#"><span class="i">▦</span><b>活動日曆</b><span>可訂閱 .ics</span></a>
+    </div>
+
+    <div class="sec-h"><h2>最近更新的學習資源</h2><a href="#">全部 · 我要投稿 →</a></div>
+    <div class="res">
+      <div class="card"><div class="k">八年級 · 數學 · 第一次段考</div><b>2-1 ～ 2-2 重點整理</b><div class="w"><span>阿明 · CC BY-NC</span><span class="badge b-sub">學生投稿</span></div></div>
+      <div class="card"><div class="k">十年級 · 英文 · 第一次段考</div><b>Unit 1–2 單字表（含例句）</b><div class="w"><span>Kai · CC BY-NC</span><span class="badge b-sub">學生投稿</span></div></div>
+      <div class="card"><div class="k">全年級</div><b>115-1 教科書版本一覽</b><div class="w"><span>官網 PDF</span><span class="badge b-official">官方原文</span></div></div>
+    </div>
+  </main>
+</div>
+
+<nav class="tabbar">
+  <a class="on" href="#"><span class="i">⌂</span>首頁</a>
+  <a href="#"><span class="i">✎</span>段考</a>
+  <a href="#"><span class="i">☰</span>公告</a>
+  <a href="#"><span class="i">?</span>Wiki</a>
+  <a href="#"><span class="i">↗</span>連結</a>
+</nav>
+</body>
+</html>
