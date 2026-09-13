@@ -15,6 +15,8 @@ const SAMPLE = `八年級第一次段考考程
 3-4節 歷史
 5-6節 地理`
 
+const TEXT_FILE = /\.(txt|md|csv|json)$/i
+
 export function Admin() {
   const { exam, publish, reset } = useExam()
   const [grade, setGrade] = useState<Grade>('g8')
@@ -40,17 +42,31 @@ export function Admin() {
     [exam, slots],
   )
 
-  function extract() {
+  function applyParsed(raw: string, source: string) {
     setError('')
     setOk('')
-    const parsed = parseScheduleText(text, grade)
+    const parsed = parseScheduleText(raw, grade)
     if (!parsed.length) {
-      setError('認不出「日期 + 節次 + 科目」。可先貼下面範例試試，或改文字後再轉。')
+      setError('認不出「日期 + 節次 + 科目」。可改文字後再轉，或按「填入範例」。')
       return
     }
     const others = slots.filter((s) => s.grade !== grade)
     setSlots([...others, ...parsed])
-    setOk(`抽出 ${parsed.length} 筆 ${GRADE_LABEL[grade]}年級考程。請核對 JSON 再發布。`)
+    setOk(`${source}抽出 ${parsed.length} 筆 ${GRADE_LABEL[grade]}年級考程。請核對 JSON 再發布。`)
+  }
+
+  async function onFile(file: File | undefined) {
+    if (!file) return
+    setFileName(file.name)
+    setError('')
+    setOk('')
+    if (!TEXT_FILE.test(file.name) && !file.type.startsWith('text/')) {
+      setError('PDF／照片現在還不能自動辨識。請改傳 .txt，或把考程文字貼到下面再轉成 JSON。')
+      return
+    }
+    const content = await file.text()
+    setText(content)
+    applyParsed(content, `已讀入 ${file.name}，`)
   }
 
   function doPublish() {
@@ -75,21 +91,20 @@ export function Admin() {
         <Link to="/">前台</Link> · 後台
       </div>
       <h1>上傳{exam.name}考程</h1>
-      <p className="lead">
-        把老師或教務處發的考程文字貼上來（或先從 PDF／截圖自己打出來）。這裡用規則把「哪一天、第幾節、哪一科」抽成
-        JSON。之後可換成 LLM，格式不變。
-      </p>
+      <p className="lead">上傳文字檔或貼上考程，抽出「哪一天、第幾節、哪一科」成 JSON，核對後發布。</p>
 
       <div className="drop">
-        <b>檔案名稱只作備註</b>
+        <b>上傳考程文字檔</b>
         <p className="muted" style={{ margin: '8px 0 0' }}>
-          正式環境會把 PDF／照片丟給模型。現在請把認得出的文字貼在下面。
+          接受 .txt／.md。PDF 與截圖請先自己打成文字再貼。
         </p>
         <input
           style={{ marginTop: 12 }}
           type="file"
-          accept=".pdf,image/*"
-          onChange={(e) => setFileName(e.target.files?.[0]?.name || '')}
+          accept=".txt,.md,.csv,.json,text/plain"
+          onChange={(e) => {
+            void onFile(e.target.files?.[0])
+          }}
         />
         {fileName ? <p className="muted">已選：{fileName}</p> : null}
       </div>
@@ -115,7 +130,7 @@ export function Admin() {
         />
       </div>
       <div className="row-btns">
-        <button className="btn btn-navy" type="button" onClick={extract}>
+        <button className="btn btn-navy" type="button" onClick={() => applyParsed(text, '')}>
           轉成 JSON
         </button>
         <button

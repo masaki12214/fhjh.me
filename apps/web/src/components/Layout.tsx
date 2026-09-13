@@ -1,4 +1,4 @@
-import { useState } from 'react'
+import { useEffect, useRef, useState } from 'react'
 import { Link, NavLink, Outlet, useNavigate } from 'react-router-dom'
 
 const nav = [
@@ -12,7 +12,12 @@ export function Layout() {
   const [searchOpen, setSearchOpen] = useState(false)
   const [menuOpen, setMenuOpen] = useState(false)
   const [q, setQ] = useState('')
+  const searchRef = useRef<HTMLInputElement>(null)
   const navigate = useNavigate()
+
+  useEffect(() => {
+    if (searchOpen) searchRef.current?.focus()
+  }, [searchOpen])
 
   function goSearch(e: React.FormEvent) {
     e.preventDefault()
@@ -42,6 +47,7 @@ export function Layout() {
           <form className={`search ${searchOpen ? 'open' : ''}`} onSubmit={goSearch}>
             <span aria-hidden="true">🔍</span>
             <input
+              ref={searchRef}
               value={q}
               onChange={(e) => setQ(e.target.value)}
               placeholder="搜尋段考、請假…"

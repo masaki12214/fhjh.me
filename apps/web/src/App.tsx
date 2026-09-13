@@ -1,5 +1,6 @@
 import { BrowserRouter, Navigate, Route, Routes } from 'react-router-dom'
 import { Layout } from './components/Layout'
+import { ScrollToTop } from './components/ScrollToTop'
 import { ExamProvider } from './examContext'
 import { About } from './pages/About'
 import { Admin } from './pages/Admin'
@@ -17,6 +18,7 @@ export default function App() {
   return (
     <ExamProvider>
       <BrowserRouter>
+        <ScrollToTop />
         <Routes>
           <Route element={<Layout />}>
             <Route index element={<Home />} />

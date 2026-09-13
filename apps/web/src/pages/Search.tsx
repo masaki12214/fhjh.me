@@ -1,4 +1,5 @@
-import { Link, useSearchParams } from 'react-router-dom'
+import { type FormEvent } from 'react'
+import { Link, useNavigate, useSearchParams } from 'react-router-dom'
 import { links } from '../data/links'
 import { notices } from '../data/notices'
 import { wikiPages } from '../data/wiki'
@@ -6,6 +7,7 @@ import { WIKI_PAGE_TITLE } from '../lib/wikipedia'
 
 export function Search() {
   const [params] = useSearchParams()
+  const navigate = useNavigate()
   const q = (params.get('q') || '').trim()
   const needle = q.toLowerCase()
 
@@ -24,9 +26,29 @@ export function Search() {
   const linkHits = links.filter((l) => l.title.toLowerCase().includes(needle) || l.description.includes(q))
   const noticeHits = notices.filter((n) => n.title.includes(q) || (n.summary && n.summary.includes(q)))
 
+  function submit(e: FormEvent<HTMLFormElement>) {
+    e.preventDefault()
+    const next = String(new FormData(e.currentTarget).get('q') || '').trim()
+    if (next.length < 2) return
+    navigate(`/search?q=${encodeURIComponent(next)}`)
+  }
+
   return (
     <main className="wrap page search-page">
       <h1>搜尋</h1>
+      <form className="search-form" onSubmit={submit}>
+        <input
+          key={q}
+          type="search"
+          name="q"
+          defaultValue={q}
+          placeholder="段考、請假、校務系統…"
+          aria-label="搜尋關鍵字"
+        />
+        <button className="btn btn-navy" type="submit">
+          搜尋
+        </button>
+      </form>
       <p className="lead">{q ? `「${q}」` : '請輸入至少兩個字。'}</p>
       {!q || q.length < 2 ? null : (
         <>

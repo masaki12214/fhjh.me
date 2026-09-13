@@ -96,7 +96,8 @@ th{font-size:12.5px;color:var(--muted);background:#F8FAFC;border-top:0}
 .wiki-meta a{color:var(--blue);font-weight:600}
 .wiki-attr a{color:var(--blue);font-weight:600}
 .wiki-mw{font-size:15px;line-height:1.7;overflow:hidden}
-.wiki-mw .mw-editsection,.wiki-mw .mw-empty-elt{display:none}
+.wiki-mw .mw-editsection,.wiki-mw .mw-empty-elt,
+.wiki-mw .ambox,.wiki-mw .tmbox,.wiki-mw .mbox-small{display:none}
 .wiki-mw a{color:var(--blue)}
 .wiki-mw h2{font-size:18px;color:var(--navy);border-bottom:1px solid var(--line);padding-bottom:6px;margin:28px 0 12px}
 .wiki-mw h3{font-size:16px;color:var(--navy);margin:20px 0 8px}
@@ -128,7 +129,8 @@ th{font-size:12.5px;color:var(--muted);background:#F8FAFC;border-top:0}
 .ok{margin-top:14px;padding:12px 14px;background:var(--green-bg);color:var(--green);border-radius:10px;font-weight:600}
 .err{margin-top:10px;color:var(--red);font-size:14px}
 
-.search-page input[type="search"]{width:100%;border:1px solid var(--line);border-radius:12px;padding:12px 14px}
+.search-form{display:flex;gap:8px;margin:0 0 14px}
+.search-form input[type="search"]{flex:1;width:100%;border:1px solid var(--line);border-radius:12px;padding:12px 14px}
 .hit{display:block;padding:12px 0;border-bottom:1px solid var(--line)}
 .hit b{display:block;color:var(--navy)}
 
