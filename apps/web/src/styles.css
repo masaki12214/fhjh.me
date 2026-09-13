@@ -143,7 +143,9 @@ th{font-size:12.5px;color:var(--muted);background:#F8FAFC;border-top:0}
   .drawer.open{display:block}
   .notice-bar .full{display:none}
   .notice-bar .short{display:inline}
-  .facts,.wiki-grid{grid-template-columns:1fr}
+  .facts{grid-template-columns:1fr}
+  .wiki-grid{display:flex;flex-direction:column}
+  .wiki-grid > .article{order:-1}
   .tools{grid-template-columns:1fr 1fr}
   .wiki-mw .infobox,.wiki-mw table.infobox{float:none;width:100%;margin:0 0 16px}
 }
