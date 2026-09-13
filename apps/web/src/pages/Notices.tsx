@@ -12,7 +12,9 @@ export function Notices() {
       <div className="link-list">
         {notices.map((n) => (
           <a className="card" key={n.nid} href={n.url} target="_blank" rel="noreferrer">
-            <b>{n.title}</b>
+            <b>
+              {n.title} <span className="badge b-official">官方原文</span>
+            </b>
             <span>
               {n.publishedAt} · {n.summary}
             </span>

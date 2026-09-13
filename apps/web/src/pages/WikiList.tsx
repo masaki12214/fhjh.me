@@ -58,7 +58,13 @@ export function WikiList() {
               </a>
             </div>
           ) : null}
-          {!error && !article ? <p className="muted">正在從維基百科載入條目…</p> : null}
+          {!error && !article ? (
+            <div className="wiki-loading">
+              <div className="wiki-skel" />
+              <div className="wiki-skel short" />
+              <p className="muted">正在從維基百科載入條目…</p>
+            </div>
+          ) : null}
           {article ? <div className="wiki-mw" dangerouslySetInnerHTML={{ __html: article.html }} /> : null}
         </article>
       </div>

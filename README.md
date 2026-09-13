@@ -17,7 +17,7 @@ npm run dev
 - 首頁：第一次段考何時、考程在不在
 - 校園 Wiki 主頁：中文維基百科「臺北市私立復興實驗高級中學」
 - 後台 `/admin`：上傳 .txt 或貼考程文字 → 轉 JSON → 發布（存在這個瀏覽器）
-- 部署：把 `apps/web` 的 `dist` 丟到 Cloudflare Pages（已含 SPA `_redirects`）
+- 部署：`cd apps/web && npm run deploy`（Cloudflare Workers 靜態資產 + `fhjh.me`）
 
 ## 文件
 

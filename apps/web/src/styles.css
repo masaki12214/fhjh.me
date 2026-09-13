@@ -109,6 +109,13 @@ th{font-size:12.5px;color:var(--muted);background:#F8FAFC;border-top:0}
 .wiki-mw .thumb{margin:12px 0;max-width:100%}
 .wiki-mw .thumbinner{max-width:100%}
 .wiki-mw .navbox,.wiki-mw .navbox-inner{overflow-x:auto;max-width:100%}
+.wiki-mw .hatnote{font-size:13px;color:var(--muted);font-style:italic;margin:0 0 14px}
+.wiki-mw .reference,.wiki-mw .mw-ref{font-size:11px}
+.wiki-loading{margin:12px 0 8px}
+.wiki-skel{height:14px;border-radius:8px;background:linear-gradient(90deg,#EEF5FF,#F8FAFC,#EEF5FF);margin:10px 0}
+.wiki-skel.short{width:62%}
+.link-group{margin-top:8px}
+.link-group .section-h{margin-top:18px}
 .article{padding:26px 28px}
 .article a{color:var(--blue)}
 .article h2{font-size:18px;color:var(--navy);margin:22px 0 8px}
