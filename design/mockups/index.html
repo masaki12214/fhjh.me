@@ -1,0 +1,103 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>FHJH.me 前端設計稿 · 三個版本</title>
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+TC:wght@400;500;700&display=swap" rel="stylesheet">
+<style>
+*{box-sizing:border-box}
+html,body{margin:0;background:#F4F1EA;color:#1B1A17;font-family:"Noto Sans TC","WenQuanYi Micro Hei","Droid Sans Fallback",sans-serif;font-synthesis:none;line-height:1.6}
+a{color:inherit}
+.wrap{max-width:1100px;margin:0 auto;padding:36px 20px 64px}
+h1{font-size:32px;margin:0 0 8px}
+.lead{max-width:720px;color:#4A463C;margin:0 0 28px}
+.note{background:#FFF7D6;border:1px solid #E6D48A;border-radius:10px;padding:12px 14px;font-size:14px;margin-bottom:28px}
+.grid{display:grid;gap:18px}
+.card{background:#fff;border:1px solid #E4DFD2;border-radius:14px;overflow:hidden;box-shadow:0 8px 24px rgba(40,32,16,.06)}
+.card header{padding:18px 20px 12px;display:flex;justify-content:space-between;gap:12px;align-items:flex-start}
+.card header h2{margin:0;font-size:20px}
+.card header .tag{font-size:12px;font-weight:700;padding:3px 8px;border-radius:999px;background:#123B6D;color:#fff;white-space:nowrap}
+.card header .tag.alt{background:#D9480F}
+.card header .tag.dark{background:#0F172A}
+.card p{margin:0;padding:0 20px 14px;color:#4A463C;font-size:14.5px}
+.links{display:flex;flex-wrap:wrap;gap:8px;padding:0 20px 18px}
+.links a{display:inline-block;background:#F4F1EA;border:1px solid #E4DFD2;border-radius:8px;padding:7px 11px;font-size:13.5px;font-weight:500;text-decoration:none}
+.links a.pri{background:#123B6D;color:#fff;border-color:#123B6D}
+.shot{display:block;border-top:1px solid #E4DFD2;background:#EEE}
+.shot img{width:100%;height:auto;display:block}
+.compare{margin-top:28px;font-size:14.5px}
+table{width:100%;border-collapse:collapse;background:#fff;border-radius:12px;overflow:hidden;border:1px solid #E4DFD2}
+th,td{text-align:left;padding:10px 12px;border-top:1px solid #E4DFD2;vertical-align:top}
+th{background:#FAF7F0;font-size:13px}
+@media(max-width:700px){.card header{flex-direction:column}}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <h1>FHJH.me 前端設計稿</h1>
+  <p class="lead">同一套資訊架構（本週重點、段考倒數、快到期、公告摘要、來源徽章），做成三個視覺方向。內容都是真實官網近期公告改寫，方便直接比較。</p>
+  <div class="note">這是可點的 HTML 原型，不是 Figma。建議先看三個首頁，再進版本 A 的段考／公告／Wiki 內頁。選一個方向後再做成真正的網站。</div>
+
+  <div class="grid">
+    <article class="card">
+      <header>
+        <div>
+          <h2>A. 資訊儀表板</h2>
+        </div>
+        <span class="tag">建議第一版</span>
+      </header>
+      <p>白底、深藍、卡片。最接近計畫書「學生工具」：資訊密度中等、來源徽章清楚、手機第一屏就能看到非官方標示＋本週重點＋段考倒數。</p>
+      <div class="links">
+        <a class="pri" href="v1-dashboard.html">開首頁</a>
+        <a href="v1-exam.html">段考中心</a>
+        <a href="v1-notice.html">公告摘要</a>
+        <a href="v1-wiki.html">校園 Wiki</a>
+      </div>
+      <a class="shot" href="v1-dashboard.html"><img src="shots/v1-dashboard_desktop.png" alt="版本 A 桌面首頁"></a>
+    </article>
+
+    <article class="card">
+      <header>
+        <div>
+          <h2>B. 校刊編輯風</h2>
+        </div>
+        <span class="tag alt">閱讀感</span>
+      </header>
+      <p>報紙／校刊版面：襯線標題、雙線頁眉、編號重點。比較不像「入口網站」，也比較不像校方官網。適合強調「學生編輯每天整理」。</p>
+      <div class="links">
+        <a class="pri" href="v2-editorial.html">開首頁</a>
+      </div>
+      <a class="shot" href="v2-editorial.html"><img src="shots/v2-editorial_desktop.png" alt="版本 B 桌面首頁"></a>
+    </article>
+
+    <article class="card">
+      <header>
+        <div>
+          <h2>C. 工具型 App</h2>
+        </div>
+        <span class="tag dark">深色</span>
+      </header>
+      <p>深色側欄＋底部導覽，像生產力 App。年級可在頂部切換。適合「回家打開查一件事就走」；也最不會被誤認成校方網站。</p>
+      <div class="links">
+        <a class="pri" href="v3-app.html">開首頁</a>
+      </div>
+      <a class="shot" href="v3-app.html"><img src="shots/v3-app_desktop.png" alt="版本 C 桌面首頁"></a>
+    </article>
+  </div>
+
+  <div class="compare">
+    <table>
+      <thead><tr><th></th><th>A 儀表板</th><th>B 校刊</th><th>C App</th></tr></thead>
+      <tbody>
+        <tr><td>第一印象</td><td>清楚、可信、偏工具</td><td>有編輯氣味、好讀</td><td>現代、不像官網</td></tr>
+        <tr><td>資訊密度</td><td>中</td><td>中高（長文）</td><td>中（側欄省空間）</td></tr>
+        <tr><td>手機</td><td>單欄卡片</td><td>長文捲動</td><td>底欄五個入口</td></tr>
+        <tr><td>被誤認官方的風險</td><td>中（深藍）</td><td>低</td><td>最低</td></tr>
+        <tr><td>第一版開發成本</td><td>最低</td><td>中（版面細節多）</td><td>中（深色＋側欄）</td></tr>
+      </tbody>
+    </table>
+  </div>
+</div>
+</body>
+</html>

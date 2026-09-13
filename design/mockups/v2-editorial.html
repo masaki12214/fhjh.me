@@ -1,0 +1,257 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>FHJH.me — 版本 B：校刊編輯風</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Noto+Serif+TC:wght@500;700&family=Noto+Sans+TC:wght@400;500;700&display=swap" rel="stylesheet">
+<style>
+:root{
+  --paper:#FBFAF7; --ink:#15181D; --ink-2:#3B424D; --muted:#6F7783; --rule:#15181D; --rule-soft:#D9D5CC;
+  --accent:#D9480F; --accent-soft:#FDEBE1;
+  --green:#1B7F4D; --blue:#1F5FBF; --purple:#6B4FBB; --amber:#B7791F;
+  --serif:"Noto Serif TC","WenQuanYi Micro Hei",serif; --sans:"Noto Sans TC","WenQuanYi Micro Hei","Droid Sans Fallback",sans-serif;
+}
+*{box-sizing:border-box}
+html,body{margin:0;background:var(--paper);color:var(--ink);font-family:var(--sans);font-size:15.5px;line-height:1.65;font-synthesis:none}
+a{color:inherit;text-decoration:none}
+.wrap{max-width:1040px;margin:0 auto;padding:0 24px}
+
+/* masthead */
+.masthead{border-bottom:3px double var(--rule)}
+.masthead .top{display:flex;justify-content:space-between;align-items:center;font-size:12.5px;color:var(--muted);padding:10px 0;border-bottom:1px solid var(--rule-soft);letter-spacing:.5px}
+.masthead .top b{color:var(--accent);font-weight:700}
+.masthead .mid{display:flex;align-items:flex-end;justify-content:space-between;padding:22px 0 14px}
+.logo{font-family:var(--serif);font-weight:700;font-size:56px;line-height:.9;letter-spacing:-1px}
+.logo small{display:block;font-family:var(--sans);font-size:13px;font-weight:500;letter-spacing:2px;color:var(--muted);margin-top:10px}
+.search{display:flex;align-items:center;gap:10px;border:1.5px solid var(--ink);padding:9px 14px;width:340px;font-size:14px;color:var(--muted);background:#fff}
+.menu{display:flex;gap:26px;padding:10px 0;font-size:14px;font-weight:700;letter-spacing:1px;border-top:1px solid var(--rule)}
+.menu a.on{color:var(--accent)}
+
+/* badges */
+.tag{display:inline-block;font-size:11px;font-weight:700;letter-spacing:1px;padding:2px 7px;border:1px solid currentColor;border-radius:2px;vertical-align:middle}
+.t-official{color:var(--green)}.t-student{color:var(--blue)}.t-sub{color:var(--purple)}.t-warn{color:var(--amber)}
+.kicker{font-size:12px;font-weight:700;letter-spacing:2px;color:var(--accent);text-transform:uppercase}
+
+/* lead */
+.lead{display:grid;grid-template-columns:1.15fr .85fr;gap:40px;padding:34px 0 30px;border-bottom:1px solid var(--rule)}
+.lead h1{font-family:var(--serif);font-size:40px;line-height:1.2;margin:8px 0 14px;font-weight:700}
+.lead p.dek{font-size:16.5px;color:var(--ink-2);margin:0 0 22px}
+.focus{border-top:1px solid var(--rule);}
+.focus h2{font-size:13px;letter-spacing:2px;margin:12px 0 8px;font-weight:700}
+.focus ol{margin:0;padding:0;list-style:none;counter-reset:n}
+.focus li{counter-increment:n;display:grid;grid-template-columns:34px 1fr auto;gap:12px;padding:12px 0;border-top:1px solid var(--rule-soft);align-items:baseline}
+.focus li::before{content:counter(n,decimal-leading-zero);font-family:var(--serif);font-size:22px;font-weight:700;color:var(--accent);line-height:1}
+.focus li b{font-size:16.5px;font-weight:700}
+.focus li span{display:block;font-size:13.5px;color:var(--muted)}
+.focus li a{font-size:13px;font-weight:700;border-bottom:1.5px solid var(--ink);white-space:nowrap}
+
+.count{border:1.5px solid var(--ink);padding:26px 26px 22px;background:#fff;position:relative}
+.count .kicker{margin-bottom:6px}
+.count .name{font-family:var(--serif);font-size:30px;font-weight:700;line-height:1.1}
+.count .num{font-family:var(--serif);font-size:128px;font-weight:700;line-height:.95;letter-spacing:-4px;margin:8px 0 0;color:var(--ink)}
+.count .num small{font-family:var(--sans);font-size:20px;font-weight:500;letter-spacing:0;margin-left:8px;color:var(--muted)}
+.count .date{font-size:15px;margin-top:8px;color:var(--ink-2)}
+.count .grades{display:flex;gap:0;margin-top:18px;border:1px solid var(--ink)}
+.count .grades span{flex:1;text-align:center;font-size:13px;padding:6px 0;border-right:1px solid var(--ink)}
+.count .grades span:last-child{border-right:0}
+.count .grades span.on{background:var(--ink);color:#fff;font-weight:700}
+.count .src{font-size:12px;color:var(--muted);margin-top:14px;display:flex;justify-content:space-between;align-items:center}
+.count .cta{display:block;margin-top:14px;text-align:center;background:var(--accent);color:#fff;font-weight:700;padding:11px;font-size:15px}
+
+/* deadline strip */
+.strip{display:grid;grid-template-columns:repeat(4,1fr);border-bottom:1px solid var(--rule)}
+.strip .cell{padding:18px 18px 18px 0;border-right:1px solid var(--rule-soft);display:grid;grid-template-columns:auto 1fr;gap:12px;align-items:start}
+.strip .cell:last-child{border-right:0}
+.strip .cell + .cell{padding-left:18px}
+.strip .n{font-family:var(--serif);font-size:40px;font-weight:700;line-height:1;color:var(--ink)}
+.strip .n small{display:block;font-family:var(--sans);font-size:11px;font-weight:500;color:var(--muted);letter-spacing:1px;text-align:center}
+.strip .cell.hot .n{color:var(--accent)}
+.strip b{display:block;font-size:15px;line-height:1.35}
+.strip span{display:block;font-size:12.5px;color:var(--muted);margin-top:3px}
+.strip-head{display:flex;justify-content:space-between;align-items:baseline;padding:22px 0 6px}
+.strip-head h2,.sec h2{font-family:var(--serif);font-size:22px;font-weight:700;margin:0}
+.strip-head a,.sec .more{font-size:13px;font-weight:700;border-bottom:1.5px solid var(--ink)}
+
+/* body columns */
+.cols{display:grid;grid-template-columns:1fr 300px;gap:44px;padding:30px 0}
+.sec .head{display:flex;justify-content:space-between;align-items:baseline;border-bottom:2px solid var(--ink);padding-bottom:8px;margin-bottom:6px}
+.story{display:grid;grid-template-columns:78px 1fr;gap:16px;padding:18px 0;border-bottom:1px solid var(--rule-soft)}
+.story .date{font-family:var(--serif);font-weight:700;font-size:15px;line-height:1.2;color:var(--ink-2)}
+.story .date b{display:block;font-size:30px;line-height:1;color:var(--ink)}
+.story h3{font-family:var(--serif);font-size:19px;line-height:1.35;margin:0 0 6px;font-weight:700}
+.story h3 em{font-style:normal;color:var(--muted);font-weight:500;font-size:15px}
+.story p{margin:0 0 8px;color:var(--ink-2);font-size:15px}
+.story p.none{color:var(--muted);font-size:14px}
+.story .meta{display:flex;gap:10px;align-items:center;flex-wrap:wrap;font-size:12.5px;color:var(--muted)}
+.story .meta .due{color:var(--accent);font-weight:700}
+.story .meta a{border-bottom:1px solid var(--rule-soft)}
+.dept{font-size:11.5px;font-weight:700;padding:0 6px;border-left:3px solid #4C91D6}
+.dept.bi{border-color:#C91215}.dept.sp{border-color:#949494}
+
+aside .box{border-top:2px solid var(--ink);padding:12px 0 18px;margin-bottom:10px}
+aside h4{font-size:13px;letter-spacing:2px;margin:0 0 10px;font-weight:700}
+aside .idx a{display:flex;justify-content:space-between;align-items:baseline;padding:10px 0;border-bottom:1px solid var(--rule-soft);font-weight:700;font-size:16px;font-family:var(--serif)}
+aside .idx a span{font-family:var(--sans);font-weight:400;font-size:12.5px;color:var(--muted)}
+aside .idx a::after{content:"→";font-family:var(--sans);font-weight:400;color:var(--muted)}
+aside .cloud{display:flex;flex-wrap:wrap;gap:6px 14px;font-size:14px}
+aside .cloud a{border-bottom:1px solid var(--ink)}
+aside .notes li{padding:8px 0;border-bottom:1px solid var(--rule-soft);font-size:14px;list-style:none}
+aside .notes{padding:0;margin:0}
+aside .notes small{display:block;color:var(--muted);font-size:12px}
+aside .disclaimer{background:var(--accent-soft);padding:14px;font-size:13px;line-height:1.6}
+aside .disclaimer b{color:var(--accent)}
+
+footer{border-top:3px double var(--rule);padding:22px 0 40px;font-size:13px;color:var(--muted);display:flex;justify-content:space-between;gap:20px}
+footer .l{display:flex;gap:18px}
+footer .l a{border-bottom:1px solid var(--rule-soft)}
+
+@media (max-width:900px){
+  .lead,.cols{grid-template-columns:1fr;gap:26px}
+  .strip{grid-template-columns:1fr 1fr}
+  .strip .cell{border-right:0;padding-left:0 !important;border-bottom:1px solid var(--rule-soft)}
+  .menu{overflow-x:auto;white-space:nowrap}
+  .search{width:auto;flex:1}
+  .masthead .mid{gap:14px}
+  .logo{font-size:40px}
+  .count .num{font-size:96px}
+}
+@media (max-width:576px){
+  .wrap{padding:0 18px}
+  .masthead .top{font-size:11.5px}
+  .masthead .mid{flex-direction:column;align-items:stretch;padding:16px 0 10px}
+  .lead h1{font-size:30px}
+  .strip{display:flex;overflow-x:auto}
+  .strip .cell{min-width:220px;border-bottom:0;border-right:1px solid var(--rule-soft);padding:14px 14px 14px 0}
+  .strip .cell + .cell{padding-left:14px}
+  .story{grid-template-columns:60px 1fr;gap:12px}
+  .story .date b{font-size:24px}
+  .story h3{font-size:17.5px}
+  footer{flex-direction:column}
+}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <header class="masthead">
+    <div class="top"><span><b>非官方</b> · 學生製作，與校方無隸屬關係</span><span>115 學年度第 1 學期 · 第 3 週 · 2026 年 9 月 13 日（日）</span></div>
+    <div class="mid">
+      <a class="logo" href="#">FHJH.me<small>學校的事情，不該這麼難找。</small></a>
+      <div class="search">🔍 <span>搜尋「段考、請假、社團…」</span></div>
+    </div>
+    <nav class="menu"><a class="on" href="#">首頁</a><a href="#">段考中心</a><a href="#">公告摘要</a><a href="#">校園 Wiki</a><a href="#">常用連結</a><a href="#">日曆</a><a href="#">投稿</a></nav>
+  </header>
+
+  <section class="lead">
+    <div>
+      <div class="kicker">本週 · 第 3 週</div>
+      <h1>段考前三週：先把報名的、要交的，一次看完。</h1>
+      <p class="dek">這頁每天由學生編輯更新。每一則都標明是官方原文還是學生整理，並附上原文連結。</p>
+      <div class="focus">
+        <h2>本週重點</h2>
+        <ol>
+          <li><div><b>第一次段考剩 23 天</b><span>10/06（二）– 10/07（三）· 各年級範圍陸續整理中</span></div><a href="#">查看範圍</a></li>
+          <li><div><b>超越盃數學競賽 9/19 班上收件截止</b><span>國中生可報名 · 簡章在官方原文附件</span></div><a href="#">查看資格</a></li>
+          <li><div><b>本週 12 則新公告，5 則已有學生摘要</b><span>其餘顯示官方標題與原文連結</span></div><a href="#">看公告</a></li>
+        </ol>
+      </div>
+    </div>
+    <div class="count">
+      <div class="kicker">下一個大事件</div>
+      <div class="name">第一次段考</div>
+      <div class="num">23<small>天</small></div>
+      <div class="date">10 月 6 日（二）至 10 月 7 日（三）</div>
+      <div class="grades"><span>七</span><span class="on">八</span><span>九</span><span>十</span><span>十一</span><span>十二</span></div>
+      <a class="cta" href="#">看八年級各科範圍</a>
+      <div class="src"><span>來源：115-1 中學部行事曆（學生版）</span><span class="tag t-student">學生整理</span></div>
+    </div>
+  </section>
+
+  <div class="strip-head"><h2>快到期</h2><a href="#">全部截止日與活動</a></div>
+  <section class="strip">
+    <div class="cell hot"><div class="n">2<small>天</small></div><div><b>社團選社確認</b><span>高一～高三 · 9/15（一）· 範例</span></div></div>
+    <div class="cell"><div class="n">6<small>天</small></div><div><b>超越盃數學競賽報名</b><span>國中 · 9/19（五）班上收件</span></div></div>
+    <div class="cell"><div class="n">20<small>天</small></div><div><b>國際科學展覽會校內報名</b><span>全校 · 10/3（五）</span></div></div>
+    <div class="cell"><div class="n">29<small>天</small></div><div><b>GoSTEAM 科技之星競賽報名</b><span>高中 · 10/12（一）17:00</span></div></div>
+  </section>
+
+  <div class="cols">
+    <main class="sec">
+      <div class="head"><h2>最新公告 · 學生摘要</h2><a class="more" href="#">全部公告（含官網全量）</a></div>
+
+      <article class="story">
+        <div class="date"><b>11</b>9 月</div>
+        <div>
+          <h3><em>【校外競賽通知】</em>115 學年度全國性超越盃數學競賽報名</h3>
+          <p>國中生可報名。班上收件到 9/19，之後由學校統一送件；簡章與報名表看附件。</p>
+          <div class="meta"><span class="dept">中學部</span><span class="tag t-student">學生整理</span><span class="due">截止 9/19</span><a href="#">官方原文 ↗</a></div>
+        </div>
+      </article>
+      <article class="story">
+        <div class="date"><b>11</b>9 月</div>
+        <div>
+          <h3><em>【校外競賽】</em>2026 GoSTEAM 科技之星競賽</h3>
+          <p>高中生可報名的 STEAM 實作競賽。9/14–10/12 到主辦官網報名，11/21 在三民高中比賽。</p>
+          <div class="meta"><span class="dept sp">特色中心</span><span class="dept">中學部</span><span class="dept bi">中學雙語</span><span class="tag t-student">學生整理</span><span class="due">截止 10/12</span><a href="#">官方原文 ↗</a></div>
+        </div>
+      </article>
+      <article class="story">
+        <div class="date"><b>10</b>9 月</div>
+        <div>
+          <h3><em>【校外競賽】</em>2027 年臺灣國際科學展覽會國內學生報名作業注意事項</h3>
+          <p class="none">尚無學生摘要，顯示官方標題。</p>
+          <div class="meta"><span class="dept">中學部</span><span class="dept bi">中學雙語</span><span class="tag t-official">官方原文</span><a href="#">閱讀原文 ↗</a></div>
+        </div>
+      </article>
+      <article class="story">
+        <div class="date"><b>10</b>9 月</div>
+        <div>
+          <h3><em>【轉知】</em>第 24 屆週日閱讀科學大師</h3>
+          <p class="none">尚無學生摘要。</p>
+          <div class="meta"><span class="dept">中學部</span><span class="dept bi">中學雙語</span><span class="tag t-official">官方原文</span><a href="#">閱讀原文 ↗</a></div>
+        </div>
+      </article>
+      <article class="story">
+        <div class="date"><b>09</b>9 月</div>
+        <div>
+          <h3><em>【轉知】</em>115 年度高中職性別平等教育宣導月「性別與尊重」議題探究小論文競賽</h3>
+          <p>高中生可投稿小論文，主題與性別尊重相關；校內收件日待輔導室公布。</p>
+          <div class="meta"><span class="dept">中學部</span><span class="tag t-student">學生整理</span><span class="tag t-warn">截止待確認</span><a href="#">官方原文 ↗</a></div>
+        </div>
+      </article>
+    </main>
+
+    <aside>
+      <div class="box">
+        <h4>索引</h4>
+        <div class="idx">
+          <a href="#">段考中心<span>日期 · 範圍 · 資源</span></a>
+          <a href="#">校園 Wiki<span>14 篇</span></a>
+          <a href="#">常用連結<span>18 個</span></a>
+          <a href="#">活動日曆<span>.ics 訂閱</span></a>
+        </div>
+      </div>
+      <div class="box">
+        <h4>大家常查</h4>
+        <div class="cloud"><a href="#">請假怎麼辦</a><a href="#">補考申請</a><a href="#">成績證明</a><a href="#">校務系統登入</a><a href="#">服裝儀容</a><a href="#">遠道證</a><a href="#">英檢加分</a><a href="#">學習歷程</a></div>
+      </div>
+      <div class="box">
+        <h4>最近的筆記</h4>
+        <ul class="notes">
+          <li>八年級數學 2-1～2-2 重點整理<small>阿明 · CC BY-NC · <span class="tag t-sub">學生投稿</span></small></li>
+          <li>十年級英文 Unit 1–2 單字表<small>Kai · CC BY-NC · <span class="tag t-sub">學生投稿</span></small></li>
+          <li>115-1 教科書版本一覽<small>官網 PDF · <span class="tag t-official">官方原文</span></small></li>
+        </ul>
+      </div>
+      <div class="disclaimer"><b>這不是學校官網。</b>FHJH.me 由學生製作與維護，內容整理自學校官網公開頁面；重要規定請以官方原文為準。發現錯誤請<a href="#" style="border-bottom:1px solid currentColor">回報</a>。</div>
+    </aside>
+  </div>
+
+  <footer>
+    <div>© FHJH.me · 學生製作 · 非校方官方網站 · 資料最後同步 09/13 09:00</div>
+    <div class="l"><a href="#">回報錯誤／侵權／個資</a><a href="#">資料來源說明</a><a href="#">更新紀錄</a><a href="#">關於</a></div>
+  </footer>
+</div>
+</body>
+</html>
