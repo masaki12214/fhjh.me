@@ -3,6 +3,7 @@ import { Link } from 'react-router-dom'
 import { GRADE_LABEL, GRADES } from '../data/exam'
 import { useExam } from '../examContext'
 import type { ExamSlot, ExamState, Grade } from '../data/types'
+import { loadPublishKey, savePublishKey } from '../lib/examApi'
 import { parseScheduleText } from '../lib/examStore'
 
 const SAMPLE = `八年級第一次段考考程
@@ -18,13 +19,15 @@ const SAMPLE = `八年級第一次段考考程
 const TEXT_FILE = /\.(txt|md|csv|json)$/i
 
 export function Admin() {
-  const { exam, publish, reset } = useExam()
+  const { exam, remote, publish, reset } = useExam()
   const [grade, setGrade] = useState<Grade>('g8')
   const [text, setText] = useState('')
   const [fileName, setFileName] = useState('')
   const [slots, setSlots] = useState<ExamSlot[]>(exam.schedule)
+  const [publishKey, setPublishKey] = useState(() => loadPublishKey())
   const [error, setError] = useState('')
   const [ok, setOk] = useState('')
+  const [busy, setBusy] = useState(false)
 
   const json = useMemo(
     () =>
@@ -69,7 +72,7 @@ export function Admin() {
     applyParsed(content, `已讀入 ${file.name}，`)
   }
 
-  function doPublish() {
+  async function doPublish() {
     if (!slots.length) {
       setError('沒有任何考程列，不能發布。')
       return
@@ -81,8 +84,34 @@ export function Admin() {
       updatedAt: new Date().toISOString(),
       dateNote: '考程由編輯上傳。範圍以各科老師為準。',
     }
-    publish(next)
-    setOk('已發布。回首頁或段考中心即可看到時間表（存在這個瀏覽器）。')
+    setBusy(true)
+    setError('')
+    setOk('')
+    savePublishKey(publishKey)
+    try {
+      await publish(next, publishKey)
+      setOk('已發布到全站。任何人打開首頁都會看到這份考程。')
+    } catch (err) {
+      setError(err instanceof Error ? err.message : '發布失敗')
+    } finally {
+      setBusy(false)
+    }
+  }
+
+  async function doReset() {
+    setBusy(true)
+    setError('')
+    setOk('')
+    savePublishKey(publishKey)
+    try {
+      await reset(publishKey)
+      setSlots([])
+      setOk('已從全站撤下考程。')
+    } catch (err) {
+      setError(err instanceof Error ? err.message : '撤下失敗')
+    } finally {
+      setBusy(false)
+    }
   }
 
   return (
@@ -91,7 +120,10 @@ export function Admin() {
         <Link to="/">前台</Link> · 後台
       </div>
       <h1>上傳{exam.name}考程</h1>
-      <p className="lead">上傳文字檔或貼上考程，抽出「哪一天、第幾節、哪一科」成 JSON，核對後發布。</p>
+      <p className="lead">
+        上傳文字檔或貼上考程，抽出「哪一天、第幾節、哪一科」成 JSON，核對後發布
+        {remote ? '到全站（存在 Cloudflare）。' : '。連上 /api/exam 後會寫到全站。'}
+      </p>
 
       <div className="drop">
         <b>上傳考程文字檔</b>
@@ -118,6 +150,16 @@ export function Admin() {
             </option>
           ))}
         </select>
+      </div>
+      <div className="field">
+        <label htmlFor="publish-key">發布密鑰</label>
+        <input
+          id="publish-key"
+          type="password"
+          autoComplete="current-password"
+          value={publishKey}
+          onChange={(e) => setPublishKey(e.target.value)}
+        />
       </div>
       <div className="field">
         <label htmlFor="raw">考程文字</label>
@@ -151,18 +193,10 @@ export function Admin() {
       <pre>{json}</pre>
 
       <div className="row-btns">
-        <button className="btn btn-navy" type="button" onClick={doPublish}>
+        <button className="btn btn-navy" type="button" disabled={busy} onClick={() => void doPublish()}>
           確認並發布
         </button>
-        <button
-          className="btn btn-ghost"
-          type="button"
-          onClick={() => {
-            reset()
-            setSlots([])
-            setOk('已清回「考程未公布」。')
-          }}
-        >
+        <button className="btn btn-ghost" type="button" disabled={busy} onClick={() => void doReset()}>
           撤下考程
         </button>
         <Link className="btn btn-ghost" to="/exam">
