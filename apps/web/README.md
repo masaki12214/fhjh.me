@@ -18,6 +18,6 @@ http://localhost:5173
 | `/links` | 常用連結 |
 | `/notices` | 官方文件（不轉貼競賽） |
 | `/events` | 行事曆入口 |
-| `/admin` | 上傳 .txt 或貼考程 → JSON → 發布（localStorage） |
+| `/admin` | 上傳 .txt 或貼考程 → JSON → 發布到 `/api/exam`（Cloudflare KV） |
 
-靜態託管（Cloudflare Pages）：build `apps/web`，輸出 `dist`。`public/_redirects` 讓 `/wiki`、`/exam` 重整不會 404。
+Workers 靜態資源 + `worker.ts` 的 `/api/exam`。SPA 路由靠 `not_found_handling`。

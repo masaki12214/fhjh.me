@@ -5,3 +5,4 @@
 .wrangler
 *.pem
 .DS_Store
+wrangler.live.json

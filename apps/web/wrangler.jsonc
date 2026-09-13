@@ -1,6 +1,7 @@
 {
   "$schema": "./node_modules/wrangler/config-schema.json",
   "name": "fhjh-me",
+  "main": "./worker.ts",
   "compatibility_date": "2026-09-13",
   "preview_urls": true,
   "workers_dev": true,
@@ -9,8 +10,16 @@
   },
   "assets": {
     "directory": "./dist",
-    "not_found_handling": "single-page-application"
+    "not_found_handling": "single-page-application",
+    "run_worker_first": ["/api/*"]
   },
+  "kv_namespaces": [
+    {
+      "binding": "EXAM",
+      "id": "e3cd6fb1becb4157ba0f16bccabc62d7",
+      "preview_id": "ad4347f79b2b496690cefac31d71e973"
+    }
+  ],
   "routes": [
     { "pattern": "fhjh.me", "custom_domain": true },
     { "pattern": "www.fhjh.me", "custom_domain": true }
