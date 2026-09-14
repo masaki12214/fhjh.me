@@ -3,6 +3,7 @@ import { Link, NavLink, Outlet, useNavigate } from 'react-router-dom'
 
 const nav = [
   { to: '/', label: '首頁' },
+  { to: '/weekly', label: '本週考試' },
   { to: '/exam', label: '段考中心' },
   { to: '/wiki', label: '校園Wiki' },
   { to: '/links', label: '常用連結' },
@@ -50,7 +51,7 @@ export function Layout() {
               ref={searchRef}
               value={q}
               onChange={(e) => setQ(e.target.value)}
-              placeholder="搜尋段考、請假…"
+              placeholder="搜尋週考、段考、請假…"
               aria-label="搜尋"
             />
           </form>
@@ -83,8 +84,8 @@ export function Layout() {
       <div className="notice-bar">
         <div className="wrap">
           <span className="dot" />
-          <span className="full">非官方 · 學生製作 · 非校方官方網站 · 段考日期依行事曆；考程公布後會更新到這站</span>
-          <span className="short">非官方 · 考程以段考中心為準</span>
+          <span className="full">非官方 · 學生製作 · 非校方官方網站 · 每週考試在本週頁；段考考程公布後會更新到段考中心</span>
+          <span className="short">非官方 · 本週考試與段考考程以本站為準</span>
         </div>
       </div>
       <Outlet />
@@ -94,6 +95,7 @@ export function Layout() {
             <b style={{ color: 'var(--ink)' }}>FHJH.me</b> 學生製作，與復興實中無隸屬關係。重要規定以官方原文為準。
           </div>
           <div style={{ display: 'flex', gap: 14, flexWrap: 'wrap' }}>
+            <Link to="/weekly">本週考試</Link>
             <Link to="/wiki">校園 Wiki</Link>
             <Link to="/about">關於</Link>
             <Link to="/report">回報錯誤</Link>
@@ -105,11 +107,11 @@ export function Layout() {
         <NavLink to="/" end>
           <span>⌂</span>首頁
         </NavLink>
+        <NavLink to="/weekly">
+          <span>週</span>本週
+        </NavLink>
         <NavLink to="/exam">
           <span>考</span>段考
-        </NavLink>
-        <NavLink to="/wiki">
-          <span>W</span>Wiki
         </NavLink>
         <NavLink to="/links">
           <span>連</span>連結
