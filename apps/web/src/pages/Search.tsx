@@ -1,8 +1,11 @@
 import { type FormEvent } from 'react'
 import { Link, useNavigate, useSearchParams } from 'react-router-dom'
+import { GRADE_LABEL } from '../data/exam'
+import { weeklyWeeks } from '../data/weekly'
 import { links } from '../data/links'
 import { notices } from '../data/notices'
 import { wikiPages } from '../data/wiki'
+import { slotSearchText } from '../lib/weekly'
 import { WIKI_PAGE_TITLE } from '../lib/wikipedia'
 
 export function Search() {
@@ -10,6 +13,24 @@ export function Search() {
   const navigate = useNavigate()
   const q = (params.get('q') || '').trim()
   const needle = q.toLowerCase()
+
+  const weeklyPageHit =
+    q.length >= 2 &&
+    (q.includes('週考') ||
+      q.includes('本週') ||
+      q.includes('自主練習') ||
+      q.includes('單字檢定') ||
+      q.includes('考試') ||
+      weeklyWeeks.some((w) => w.title.includes(q)))
+  const weeklyHits =
+    q.length >= 2
+      ? weeklyWeeks.flatMap((week) =>
+          week.slots
+            .filter((s) => slotSearchText(s).includes(q))
+            .slice(0, 12)
+            .map((s) => ({ week, slot: s })),
+        )
+      : []
 
   const wikiHome =
     q.length >= 2 &&
@@ -45,7 +66,7 @@ export function Search() {
           type="search"
           name="q"
           defaultValue={q}
-          placeholder="段考、請假、校務系統…"
+          placeholder="週考、段考、請假、校務系統…"
           aria-label="搜尋關鍵字"
         />
         <button className="btn btn-navy" type="submit">
@@ -55,7 +76,31 @@ export function Search() {
       <p className="lead">{q ? `「${q}」` : '請輸入至少兩個字。'}</p>
       {!q || q.length < 2 ? null : (
         <>
-          <h2 style={{ fontSize: 16, color: 'var(--navy)' }}>Wiki</h2>
+          <h2 style={{ fontSize: 16, color: 'var(--navy)' }}>本週考試</h2>
+          {weeklyPageHit ? (
+            <Link className="hit" to="/weekly">
+              <b>本週考試 · 自主練習一覽</b>
+              <span className="muted">高中每週小考、單字檢定、早自習範圍</span>
+            </Link>
+          ) : null}
+          {weeklyHits.map(({ week, slot }) => (
+            <Link
+              className="hit"
+              key={`${slot.grade}-${slot.date}-${slot.period}-${slot.subject}-${slot.classes ?? ''}`}
+              to={`/weekly?grade=${slot.grade}`}
+            >
+              <b>
+                {GRADE_LABEL[slot.grade]}年級 · {slot.subject}
+              </b>
+              <span className="muted">
+                {week.title} · {slot.period}
+                {slot.scope ? ` · ${slot.scope}` : ''}
+              </span>
+            </Link>
+          ))}
+          {!weeklyPageHit && weeklyHits.length === 0 ? <p className="muted">沒有週考項目。</p> : null}
+
+          <h2 style={{ fontSize: 16, color: 'var(--navy)', marginTop: 20 }}>Wiki</h2>
           {wikiHome ? (
             <Link className="hit" to="/wiki">
               <b>{WIKI_PAGE_TITLE}</b>
@@ -85,7 +130,12 @@ export function Search() {
               <span className="muted">{n.summary}</span>
             </a>
           ))}
-          {wikiHits.length === 0 && !wikiHome && linkHits.length === 0 && noticeHits.length === 0 ? (
+          {wikiHits.length === 0 &&
+          !wikiHome &&
+          !weeklyPageHit &&
+          weeklyHits.length === 0 &&
+          linkHits.length === 0 &&
+          noticeHits.length === 0 ? (
             <p>
               找不到？<Link to="/report">回報這個關鍵字</Link>
             </p>

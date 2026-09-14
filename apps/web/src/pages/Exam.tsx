@@ -25,6 +25,9 @@ export function Exam() {
         {exam.semester} · 行事曆日期 {formatRange(exam)}
         {exam.startsOn ? `（${weekday(exam.startsOn)}` : ''}
         {exam.endsOn ? `、${weekday(exam.endsOn)}）` : exam.startsOn ? '）' : ''}
+        。每週小考與自主練習在{' '}
+        <Link to={`/weekly?grade=${grade}`}>本週考試</Link>
+        。
       </p>
       <div className="chips">
         {GRADES.map((g) => (

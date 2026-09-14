@@ -14,6 +14,7 @@ import { Notices } from './pages/Notices'
 import { NotFound } from './pages/NotFound'
 import { WikiList } from './pages/WikiList'
 import { WikiPage } from './pages/WikiPage'
+import { Weekly } from './pages/Weekly'
 
 export default function App() {
   return (
@@ -23,6 +24,7 @@ export default function App() {
         <Routes>
           <Route element={<Layout />}>
             <Route index element={<Home />} />
+            <Route path="weekly" element={<Weekly />} />
             <Route path="exam" element={<Exam />} />
             <Route path="wiki" element={<WikiList />} />
             <Route path="wiki/:slug" element={<WikiPage />} />
